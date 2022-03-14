@@ -1,10 +1,10 @@
 \chapter{Background Information}
 
-Gait velocity estimation using pHRI depends two main components - modeling human walking and then using those models in an estimator. The models used in the estimator may be physics based or data-driven. Gait may be modeled using passive physics-based models such as the Bipedal Spring-Loaded Pendulum (B-SLIP) \cite{geyer2006compliant,liu2015dynamic} model. A passive model does not have any active control inputs to modify gaits and as steady-state human walking is periodic, optimization methods need to be used to find periodic model gaits. Periodicity is ensured in the resulting gaits by using Poincar\'e maps in the gait optimization \cite{strogatz2018nonlinear,garcia1998simplest}.
+Gait velocity estimation using pHRI depends two main components - modeling human walking and then using those models in an estimator. The models used in the estimator may be physics based or data-driven. Passive physics-based models such as the Bipedal Spring-Loaded Pendulum (B-SLIP) \cite{geyer2006compliant,liu2015dynamic} model are often used to model human locomotion. A passive model does not have any active control inputs to modify gaits and as steady-state human walking is periodic, optimization methods need to be used to find periodic model gaits. Poincar\'e maps are used in the gait optimization \cite{strogatz2018nonlinear,garcia1998simplest} to find periodic gaits.
 
 \section{Poincar\'e maps}
 
-A Poincar\'e section for a dynamical is a subspace that has fewer dimensions that the model's state space. For the B-SLIP model, it may be placed at a gait event such as midstance (MS), touchdown (TD), or lift-off (LO) when the value of one of the states may be fixed e.g., when the vertical velocity of the \COM is zero. Let the Poincar\'e section be placed at MS, and let $ \mathcal{P} $ of the state $ \x_k $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. The function $ \mathcal{P}(\x_k) $ is the Poincar\'e map and there exists an initial state representing a periodic orbit where the initial state maps back to itself after one period such that
+A Poincar\'e section for a dynamical is a subspace that has fewer dimensions that the model's state space. It may be placed at a gait event such as midstance (MS), touchdown (TD), or lift-off (LO) when the value of one of the states may be fixed e.g., when the vertical velocity of the \COM is zero. Let the Poincar\'e section be placed at MS, and let $ \mathcal{P} $ of the state $ \x_k $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. The function $ \mathcal{P}(\x_k) $ is the Poincar\'e map and there exists an initial state representing a periodic orbit where the initial state maps back to itself after one period such that
 
 \begin{equation}
 	\x_k = \mathcal{P}(\x_k)
@@ -18,7 +18,7 @@ A Poincar\'e section for a dynamical is a subspace that has fewer dimensions tha
 
 A Poincar\'e section placed at MS is shown in blue in Fig.~\ref{fig:poincare}. The dynamics of the model are integrated for one step using $ \x_k $ as the initial condition. Optimization methods are used to find initial conditions that yield periodic gait by minimizing $ \delta \x $, the error between $ \x_k $ and $ \x_{k+1} $. The nonlinear return map may be linearized about these periodic gaits for further refining the gait search as described in Chapter \ref{chapter:IMM}. Model gaits for various velocities may be used as references while estimating an exoskeleton user's desired gait. Measurements of quantities such as CoM height and velocity, may be compared to simulated model gaits using state estimation tools such as the Kalman filter.
 
-\section{Kalman filters for state estimation}
+\section{State estimation using Kalman filters}
 
 Kalman filtering is a feedback-based sequential optimal state estimation technique \cite{kalman1960new}. The filter is initialized at a certain initial state estimate $ \hat{\x}_0 $ that may have associated uncertainty due to measurement errors. The evolution of this state is described using dynamical system presented in the following equations
 %
@@ -35,7 +35,7 @@ Kalman filtering is a feedback-based sequential optimal state estimation techniq
 	\caption{Illustration of the Kalman Filtering process}\label{fig:kalman}
 \end{figure}
 
-The uncertainty of the estimates $ \hat{\x} $ increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to reduce the uncertainty and increase the accuracy of the estimates as illustrated in Fig.~\ref{fig:kalman} where the $ + $ and $ - $ in the superscript denote pre- and post-update states. Kalman filters account for both, the uncertainty in the state estimates and in the measurements. Further details of this process are as follow.
+The uncertainty associated with the estimates increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to update the state estimates and reduce the uncertainty as illustrated in Fig.~\ref{fig:kalman} where the $ + $ and $ - $ in the superscript denote pre- and post-update states. Kalman filters account for both, the uncertainty in the state estimates and in the measurements. Further details of this process are as follow.
 
 The state estimates and estimate covariance $ \P $ are propagated in continuous time such that
 \begin{eqnarray}
@@ -52,4 +52,4 @@ The state estimates and estimate covariance $ \P $ are propagated in continuous 
 	\P_k^+ &=& [\mathbf{I} - \K_k \H_k(\hat{\x}_k^-)]\P_k^-,\quad \H_k(\hat{\x}_k^-) \equiv \frac{\partial \mathbf{h}}{\partial \x} \Bigr |_{\hat{\x}_k^-}
 \end{eqnarray}
 
-\noindent where $ \K_k $ is the Kalman gain, $ \F(t) $, and $ \H_k(\hat{\mathbf{x}}_k^-) $ are the linearized dynamics and measurement model respectively. The updated estimates and their covariance are $ \mathbf{x}_k^+ $ and $ \mathbf{P}_k^+ $ respectively. The above equations describe a Continous-Discrete Kalman filter setup. System dynamics are propagated in continuous time but states are updated in discrete time since measurements are discrete.
+\noindent where $ \K_k $ is the Kalman gain, $ \F(t) $, and $ \H_k(\hat{\mathbf{x}}_k^-) $ are the linearized dynamics and measurement model respectively. The updated estimates and their covariance are $ \mathbf{x}_k^+ $ and $ \mathbf{P}_k^+ $ respectively. The above equations describe a Continous-Discrete Kalman filter setup. System dynamics are propagated in continuous time but states are updated in discrete time since measurements are discrete. Kalman filters may be used for state estimation while handling the hybrid dynamics used to describe walking.
