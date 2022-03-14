@@ -1,0 +1,80 @@
+%%
+%% This is file `template.tex',
+%% generated with the docstrip utility.
+%%
+%% The original source files were:
+%%
+%% nddiss2e.dtx  (with options: `template')
+%% 
+%% This is a generated file.
+%% 
+%%  Copyright (C) 2004-2005 Sameer Vijay
+%% 
+%%  This file may be distributed and/or modified under the
+%%  conditions of the LaTeX Project Public License, either
+%%  version 1.2 of this license or (at your option) any later
+%%  version. The latest version of this license is in
+%%     http://www.latex-project.org/lppl.txt
+%% 
+%% 
+%% ==============================================================
+%% 
+%% Notre Dame's Dissertation document class by Sameer Vijay
+%% that adheres to the University of Notre Dame guidelines
+%% published in Spring 2004.
+%% 
+%% Please send any improvements/suggestions to :
+%%     Shari Hill, Graduate Reviewer.
+%%     shill2@nd.edu
+%% 
+%% For documentation on how to use nddiss2e class, process the
+%% file nddiss2e.dtx through LaTeX.
+%% 
+%% ==============================================================
+%% 
+\ProvidesFile{main.tex}
+[2016/10/16 v3.2016%
+Template file for NDdiss2e class]
+\documentclass[final,noinfo,numrefs]{nddiss2e}
+% One of the options draft, review, final must be chosen.
+% One of the options textrefs or numrefs should be chosen
+% to specify if you want numerical or ``author-date''
+% style citations.
+% Other available options are:
+% 10pt/11pt/12pt (available with draft only)
+% twoadvisors
+% noinfo (should be used when you compile the final time
+%         for formal submission)
+% sort (sorts multiple citations in the order that they're
+%       listed in the bibliography)
+% compress (compresses numerical citations, e.g. [1,2,3]
+%           becomes [1-3]; has no effect when used with
+%           the textrefs option)
+% sort&compress (sorts and compresses numerical citations;
+%           is identical to sort when used with textrefs)
+
+\usepackage{wrapfig}
+\usepackage{amsmath}
+\usepackage{lipsum}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+\usepackage{float}
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{Resources/eqnHelper}
+%\usepackage[hidelinks]{hyperref}
+
+\usepackage{subcaption}
+\makeatletter
+\renewcommand\LT@makecaption[3]{%
+	\LT@mcol\LT@cols c{\hbox to\z@{\hss\parbox[t]\LTcapwidth{%
+				\vskip\abovetableskip%
+				\centering\normalspacing
+				#1{#2 }\\[\single@skip]
+				{#3}\par
+				\endgraf\vskip\belowtableskip}%
+			\hss}}}
+\makeatother
+
+\graphicspath{{./figures/}}
+
