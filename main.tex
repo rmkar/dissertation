@@ -1,0 +1,115 @@
+
+\include{preamble}
+
+\begin{document}
+	
+	\frontmatter             % All the items before Chapter 1 go in ``frontmatter''
+	
+	\title{ Title of Work }  % Title
+	
+	\author{ Roopak M. Karulkar }      % Author's name
+	\work{ Dissertation }    % ``Dissertation'' or ``Thesis''
+	\degaward{ Doctor of Philosophy }  % Degree you're aiming for.
+	% Should be one of the following options:
+	% ``Doctor of Philosophy'' (do NOT include ``in Subject'')
+	% ``Master of Science \\ in \\ Subject''
+	\advisor{ Patrick M. Wensing }  % Advisor's name
+	% \secondadvisor{ }     % Second advisor, if used option ``twoadvisors''
+	\department{Aerospace and Mechanical Engineering}           % Name of the department
+	
+	\maketitle               % The title page is created now
+	
+	% You must use either the \makecopyright option or the \makepublicdomain option.
+	% \copyrightholder{ Roopak M. Karulkar}   % If you're not the copyright holder
+	% \copyrightyear{ 2022 }     % If the copyright is not for the current year
+	 \makecopyright        % If not making your work public domain
+	% uncomment out \makecopyright
+	% \makepublicdomain     % Uncomment this to make your work public domain
+	
+	% Including an abstract is optional for a master's thesis, and required for a
+	% doctoral dissertation.
+	% \begin{abstract}
+		% \end{abstract}
+	%                       % Either place the text between begin/end, or
+	 \include{./Chapters/abstract}    % put it in a file to be included
+	
+	% Including a dedication is optional.
+	% \renewcommand{\dedicationname}{\mbox{}} % Replace \mbox{} if you want
+	% something else.
+	% \begin{dedication}
+		% \end{dedication}
+	%                       % Use one of the two choices to add dedication text
+	 \include{./Chapters/dedication}
+	
+	
+	\tableofcontents
+	\listoffigures
+	\listoftables
+	
+	% Including a list of symbols is optional.
+	%% \renewcommand{\symbolsname}{newsymname} % Replace ``newsymname'' with
+	% the name you want, and uncomment
+	% \begin{symbols}
+		% \end{symbols}
+	%                       % Use one of the two choices to add symbols text
+	% \include{symbols}
+	
+	% Including a preface is optional.
+	%% \renewcommand{\prefacename}{ } % If you want another Preface name, add
+	% something else, and uncomment.
+	% \begin{preface}
+		% \end{preface}
+	%                       % Use one of the two choices to add preface text
+	% \include{preface}
+	
+	% Including an acknowledgements section may or may not be optional. It's hard to
+	% tell from the information available in Spring 2013.
+	%% \renewcommand{\acknowledgename}{ } % If you want another Acknowledgement name
+	% add something else, and uncomment
+	% \begin{acknowledge}
+		% \end{acknowledge}
+	%                       % Use one of the two choices to add acknowledge text
+	 \include{./Chapters/acknowledgments}
+	
+	\mainmatter
+	% Place the text body here.
+	% \include{chapter-one}
+	% Begin each chapter with \chapter{Title}.
+	%
+	% Introduction
+	\include{./Chapters/intro}
+	%
+	% Background Information
+	\include{./Chapters/background_info}
+	%
+	% IMM
+	\chapter{Model-based Approach to Estimate Gait Characteristics} \label{chapter:IMM}
+	%
+	% BKF
+	\chapter{Intent Change Estimation Based on Physical Interactions of an	Exoskeleton User}\label{chapter:BKF}
+	%
+	% Model Personalization
+	\chapter{Personalization of Estimation in the Presence of Data Scarcity}\label{chapter:MP}
+	
+	
+	\appendix
+	
+	% If you have appendices, add them here.
+	% Begin each one with \chapter{TITLE} as before. The \appendix command takes
+	% care of renaming chapter headings and creates a new page in the Table of
+	% Contents for them.
+	% \include{appendix-one}
+	
+	\backmatter              % Place for bibliography and index
+	
+	
+	\bibliographystyle{nddiss2e}
+	\bibliography{references.bib}           % input the bib-database file name
+	
+	
+\end{document}
+
+%%
+\endinput
+%%
+%% End of file `template.tex'.
