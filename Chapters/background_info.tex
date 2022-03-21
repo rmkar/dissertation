@@ -18,12 +18,13 @@ A gait of the B-SLIP model is illustrated in Fig.~\ref{fig:slip_gait}. This gait
 	\caption{A Poincar\'e map used to find periodic gaits}\label{fig:poincare}
 \end{figure}
 
-A Poincar\'e section for a dynamical is a subspace that has fewer dimensions that the model's state space. It may be placed at a gait event such as MS, TD, or LO when the value of one of the states may be fixed e.g., when the vertical velocity of the \COM is zero. Let the Poincar\'e section be placed at MS, and let $ \mathcal{P} $ of the state $ \x_k $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. The function $ \mathcal{P}(\x_k) $ is the Poincar\'e map and there exists an initial state representing a periodic orbit where the initial state maps back to itself after one period such that
+A Poincar\'e section for a dynamical is a subspace that has fewer dimensions that the model's state space. It may be placed at a gait event such as MS, TD, or LO when the value of one of the states may be fixed e.g., when the vertical velocity of the \COM is zero. Let the Poincar\'e section be placed at MS, and let $ \mathcal{P} $ of the state $ \x_k $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. The function $ \mathcal{P}(\x_k) $ is the Poincar\'e map and there exists an initial state representing a periodic orbit where the initial state maps back to itself after one period such that $ \x_k = \mathcal{P}(\x_k) $.
 %
-\begin{equation}
-	\x_k = \mathcal{P}(\x_k)
-\end{equation}
+%\begin{equation}
+%	\x_k = \mathcal{P}(\x_k)
+%\end{equation}
 %
+
 A Poincar\'e section placed at MS is shown in blue in Fig.~\ref{fig:poincare}. The dynamics of the model are integrated for one step using $ \x_k $ as the initial condition. Optimization methods are used to find initial conditions that yield periodic gait by minimizing $ \delta \x $, the error between $ \x_k $ and $ \x_{k+1} $. The nonlinear return map may be linearized about these periodic gaits for further refining the gait search as described in Chapter \ref{chapter:IMM}. Model gaits for various velocities may be used as references while estimating an exoskeleton user's desired gait. Measurements of quantities such as CoM height and velocity, may be compared to simulated model gaits using state estimation tools such as the Kalman filter.
 
 \section{State estimation using Kalman filters}
@@ -46,7 +47,7 @@ The filter is initialized at a certain initial state estimate $ \hat{\x}_0 $ tha
 	\caption{Illustration of the Kalman Filtering process}\label{fig:kalman}
 \end{figure}
 
-The uncertainty associated with the estimates increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to update the state estimates and reduce the uncertainty as illustrated in Fig.~\ref{fig:kalman} where the $ + $ and $ - $ in the superscript denote pre- and post-update states. The system illustrated here is discrete, however a continuous state evolution is shown to better illustrate the growth in uncertainty. Kalman filters account for both, the uncertainty in the state estimates and in the measurements. Further details of this process are as follow. The state estimates and estimate covariance $ \P $ are propagated in continuous time such that
+The uncertainty associated with the estimates increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to update the state estimates and reduce the uncertainty as illustrated in Fig.~\ref{fig:kalman} where the $ + $ and $ - $ in the superscript denote pre- and post-update states. The system illustrated here is discrete, however a continuous state evolution is shown to better illustrate the growth in uncertainty. Kalman filters account for both, the uncertainty in the state estimates and in the measurements. Further details of this process are as follow. The state estimates and estimate covariance $ \P $ are propagated in discrete time such that
 \begin{eqnarray}
 	\hat{\x}_{k+1} &=& \A_k \hat{\x}_k + \B_k \u_k \\
 	\P_{k+1} &=& \A_k\P_k \A_k^T + \mathbf{G}_k\Q_k\mathbf{G}_k^T 
