@@ -1,8 +1,8 @@
 \chapter{Background Information}
 
-Consistent with the nature of robotics, the work presented herein draws on concepts from multiple differing fields. This chapter serves to provide background information to familiarize the reader with some of the fundamental information used to achieve the goal of intent estimation. 
+The work presented herein draws on multiple concepts to model human walking and estimate intent. This chapter serves to provide background information to familiarize the reader with the fundamentals of these concepts before elaborating on the goals of the dissertation in subsequent chapters. Every estimation scheme depends on a model of the underlying process, the same is true for gait velocity estimation.
 
-\section{Models of locomotion}
+\section{Models of legged locomotion}
 
 Modeling gait walking is one of the main components of gait velocity estimation and it may be achieved using simple physics-based template models. Physics-based models may be actuated or passive i.e., without any control inputs.  
 
@@ -21,19 +21,20 @@ The SLIP model can be used to describe human running, however, it is inadequate 
 In their basic forms, the IP, SLIP and B-SLIP models all ignore lateral dynamics, however, lateral dynamics become more dominant for low-speed gaits. For example, according to the human walking data presented by Fukuchi et al.~\cite{fukuchi2018public}, the peak-to-peak amplitude of the lateral sway of the CoM is approximately 3 cm while walking at 1.27 m/s but it rises to 9 cm while walking at 0.44 m/s. The model presented by Geyer is defined in only two dimensions, but it generalizes to 3D~\cite{liu2015dynamic}. This 3D model allows the lateral sway to be taken into consideration and oscillations during double support are eliminated. With appropriate leg length and step width, the sway seen in the gaits generated using the 3D B-SLIP model is comparable to human data. Taking the lateral sway into consideration is especially important while studying walking at low speeds. 
 
 \section{The B-SLIP model}
-The work presented herein is focused on individuals recovering from iSCIs whose walking velocities were as low as 0.4 m/s. A majority of the the duration of steps at low velocities is spent in double support, and it is important to use a model than can describe this gait phase. Therefore, this work considers the 3D B-SLIP model to model human locomotion shown in Fig~\ref{fig:slip}. In this model, the \COM is loaded onto two massless spring legs of length $ l_o $ and stiffness $ k $. The position and velocity of the point mass $ m $ are given by $ \p_{\COM} = [x_{\COM} ,y_{\COM} ,z_{\COM}]^T $ and $ \v_{\COM} = [v_x ,v_y ,v_z]^T $. The position of the leading leg at touchdown is given by two angles, the angle between the leading leg and vertical $ \theta $ and the angle $ \varphi $ between the forward axis $ x $  and the ground projection of the leading leg.
-
+The work presented herein is focused on individuals recovering from iSCIs whose walking velocities were as low as 0.4 m/s. A majority of the the duration of steps at low velocities is spent in double support, and it is important to use a model than can describe this gait phase. Therefore, this work considers the 3D B-SLIP model to model human locomotion shown in Fig~\ref{fig:slip}. In this model, the \COM~is loaded onto two massless spring legs of length $ l_o $ and stiffness $ k $. The position and velocity of the point mass $ m $ are given by $ \p_{\COM} = [x_{\COM} ,y_{\COM} ,z_{\COM}]^T $ and $ \v_{\COM} = [v_x ,v_y ,v_z]^T $. The position of the leading leg at touchdown is given by two angles, the angle between the leading leg and vertical $ \theta $ and the angle $ \varphi $ between the forward axis $ x $  and the ground projection of the leading leg.
+%
 \begin{figure}
 	\centering
 	\includegraphics[width=0.6\linewidth]{3DSLIP.eps}
 	\caption{The Bipedal Spring Loaded Inverted Pendulum \cite{liu2015dynamic} model of walking}\label{fig:slip}
 \end{figure}
-
+%
 \begin{figure}
 	\centering
 	\includegraphics[width=\linewidth]{slip_gait.pdf}
 	\caption{One step of a B-SLIP gait}\label{fig:slip_gait}
 \end{figure} 
+%
 
 A gait of the B-SLIP model, as viewed in the sagittal plane \footnote{The saggital plane is the plane that divides the body into right and left parts.}, is illustrated in Fig.~\ref{fig:slip_gait}. This gait starts at midstance (MS), where the CoM is loaded onto the trailing leg in single-support (SS1). The gait then proceeds with the touchdown (TD) of the leading leg and enters the double support (DS) phase. The DS phase ends with lift-off (LO) of the trailing leg and the model enters the second single-support phase (SS2). The SS2 phase ends in MS, again with the CoM loaded onto the leading leg. As there are alternating SS and DS phases, the dynamics of the B-SLIP model are hybrid.
 
@@ -46,23 +47,23 @@ The dynamics of the model in single support are described by
 \begin{equation}
 	m\ddot{\p_{\COM}} = k(l_0 - \lVert \mathbf{l}_A \rVert)\hat{\mathbf{l}}_A + k(l_0 - \lVert \mathbf{l}_B \rVert)\hat{\mathbf{l}}_B + m \mathbf{g}
 \end{equation}
-
+%
 \noindent Certain conditions, known as guards, must be met to enable the switching of the dynamics from one phase to another. There are three switching surfaces to enable phase switches at TD, LO, and MS. These sets are as follows
-
+%
 \begin{eqnarray}
 	\mathcal{G}_{TD} &=& \{(\p,\v)| v_z < 0 ,z_{\COM} < z_{T}\} \\
 	\mathcal{G}_{LO} &=& \{(\p,\v)| v_z > 0 ,\lVert \mathbf{l}_A \rVert > l_0\} \\
 	\mathcal{G}_{MS} &=& \{(\p,\v)| v_z = 0 ,z_{\COM} > z_{T} ,\lVert \mathbf{l}_A \rVert < l_0\} 
 \end{eqnarray} 
-
+%
 \noindent where $ z_{T} = l_0 \cos \theta $ is the threshold height for touchdown. Satisfaction of these guard conditions triggers gait phase switches and the states of the model are transferred across the switching events using functions called reset maps. There are three reset maps for the B-SLIP model following the general form $ \x^+ = \mathcal{R(\x^-)} $, where the $ + $ and $ - $ denote pre- and post-switch states. One map is applied at TD and the other at LO such that
-
+%
 \begin{eqnarray}
 	\mathcal{R}_{TD}:\x^- &\rightarrowtail& I\x^- :\mathbb{R}^6 \rightarrowtail \mathbb{R}^6 \\
 	\mathcal{R}_{LO}:\x^- &\rightarrowtail& I\x^- ,\p_B \leftarrow \p_A :\mathbb{R}^6 \rightarrowtail \mathbb{R}^6 \\
 	\mathcal{R}_{MS}:\x^- &\rightarrowtail& I\x^- :\mathbb{R}^6 \rightarrowtail \mathbb{R}^6
 \end{eqnarray}
-
+%
 The are not impacts at touchdown as spring legs of the B-SLIP model are assumed to be massless. Reset maps handle touchdown impacts for models that consider the mass of the feet. Thus, the B-SLIP model can exhibit periodic gaits by alternately switching through SS and DS phases.
 
 As the B-SLIP model is passive, it does not have any active control inputs to modify gaits and maintain periodicity. Therefore, optimization methods need to be used to find periodic model gaits as steady-state human walking is periodic. Poincar\'e maps are used in the gait optimization \cite{strogatz2018nonlinear,garcia1998simplest} to find periodic gaits.
@@ -71,22 +72,24 @@ As the B-SLIP model is passive, it does not have any active control inputs to mo
 
 \begin{figure}
 	\centering
-	\includegraphics[width=.25\linewidth]{poincare.pdf}
+	\includegraphics[width=.3\linewidth]{poincare.pdf}
 	\caption{A Poincar\'e map used to find periodic gaits}\label{fig:poincare}
 \end{figure}
 
-A Poincar\'e section for a dynamical is a subspace that has fewer dimensions that the model's state space. It may be placed at a gait event such as MS, TD, or LO when the value of one of the states may be fixed e.g., when the vertical velocity of the \COM is zero. Let the Poincar\'e section be placed at MS, and let $ \mathcal{P} $ of the state $ \x_k $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. The function $ \mathcal{P}(\x_k) $ is the Poincar\'e map and there exists an initial state representing a periodic orbit where the initial state maps back to itself after one period such that $ \x_k = \mathcal{P}(\x_k) $.
+A Poincar\'e section for a dynamical is a subspace that has fewer dimensions that the model's state space. It may be placed at a gait event such as MS, TD, or LO when the value of one of the states may be known i.e., when a guard condition is met. Let the Poincar\'e section be placed at MS, and let $ \mathcal{P}(\x_k) $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. Then function $ \mathcal{P}(\x_k) $ is the Poincar\'e map and there exists an initial state called a fixed point, representing a periodic orbit where the initial state maps back to itself after one period such that $ \x_k = \mathcal{P}(\x_k) $.
 %
 %\begin{equation}
 %	\x_k = \mathcal{P}(\x_k)
 %\end{equation}
 %
 
-A Poincar\'e section placed at MS is shown in blue in Fig.~\ref{fig:poincare}. The dynamics of the model are integrated for one step using $ \x_k $ as the initial condition. Optimization methods are used to find initial conditions that yield periodic gait by minimizing $ \delta \x $, the error between $ \x_k $ and $ \x_{k+1} $. The nonlinear return map may be linearized about these periodic gaits for further refining the gait search as described in Chapter \ref{chapter:IMM}. Model gaits for various velocities may be used as references while estimating an exoskeleton user's desired gait. Measurements of quantities such as CoM height and velocity, may be compared to simulated model gaits using state estimation tools such as the Kalman filter. 
+A Poincar\'e section placed at MS is shown in blue in Fig.~\ref{fig:poincare}. The dynamics of the model are integrated for one step using $ \x_k $ as the initial condition. Optimization methods are used to find initial conditions that yield periodic gait by minimizing $ \delta \x $, the error between $ \x_k $ and $ \x_{k+1} $. The nonlinear return map may be linearized about these periodic gaits for further refining the gait search as described in Chapter~\ref{chapter:IMM}. Model gaits for various velocities may be used as references while estimating an exoskeleton user's desired gait. Measurements of quantities such as \COM~height and velocity, may be compared to simulated model gaits using state estimation tools such as the Kalman filter. 
 
 \section{State estimation using Kalman filters}
 
-Kalman filtering is a feedback-based sequential optimal state estimation technique \cite{kalman1960new}. The optimality of this technique stems from the method of computing feedback gain that accounts for modeling and measurement errors. A fundamental assumption about the nature of these errors is that they are zero-mean Gaussian noise processes. The filter was originally proposed for discrete-time linear systems. 
+Kalman filtering is a feedback-based sequential optimal estimation technique \cite{kalman1960new} to estimate states and parameters of dynamical systems. The estimates made by the filter are conditioned on certain measurements of either the states themselves or other quantities that may be represented as a functions of the states through a measurement model. State estimation is reliant on these measurements to get a picture of the real world, however these measurements rarely free of noise that may adversely affect the quality of the state estimates. 
+
+Kalman filters follow a predictor-corrector scheme in which states are propagated using a model of system dynamics which may be incomplete. These states are then corrected using the residual between sensor measurements and the predictions. If the feedback gain applied to this residual is too low, state estimates will not be appropriately corrected, and if the gain is too high, the noise model will overshadow the system dynamics and the estimates will begin tracking noise. Kalman filtering presents an optimal method of computing feedback gain that accounts for modeling and measurement errors with a fundamental assumption that any modeling or measurement errors are zero-mean Gaussian noise processes. The filter was originally proposed for discrete-time linear systems. 
  
 \subsection{Discrete-time Kalman Filter}
 The filter is initialized at a certain initial state estimate $ \hat{\x}_0 $ that may have associated uncertainty due to measurement errors. The evolution of this state is described using dynamical system presented in the following equations
@@ -96,15 +99,14 @@ The filter is initialized at a certain initial state estimate $ \hat{\x}_0 $ tha
 	\tilde{\y}_k &=& \H_k \x_k + \mathbf{v}_k,\quad \mathbf{v}_k \sim \mathcal{N}(0,\R_k) \label{eq:meas_lin}
 \end{eqnarray}
 %
-
 \noindent where $ \x_k $ and $ \u_k $ are the discrete-time states and inputs, $ \y_k $ are the discrete-time measurements, $ \A_k $, $ \B_k $, $ \H_k $ are the system, input, and measurement models respectively. The system has zero-mean Gaussian noises for process noise $ \mathbf{w}_k $ and measurement noise $ \mathbf{v}_k $ with covariances  $ \Q_k $ and $ \R_k $ respectively. The measurement noise $ \mathbf{w}(t) $ is combined with the measurement equation $ \H_k \x_k$ to form the noisy measurement $ \tilde{\y}_k $. 
-
+%
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{kalman.pdf}
+	\includegraphics[width=0.8\linewidth]{kalman.pdf}
 	\caption{Illustration of the Kalman Filtering process}\label{fig:kalman}
 \end{figure}
-
+%
 The uncertainty associated with the estimates increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to update the state estimates and reduce the uncertainty as illustrated in Fig.~\ref{fig:kalman} where the $ + $ and $ - $ in the superscript denote pre- and post-update states. The system illustrated here is discrete, however a continuous state evolution is shown to better illustrate the growth in uncertainty. Kalman filters account for both, the uncertainty in the state estimates and in the measurements. Further details of this process are as follow. The state estimates and estimate covariance $ \P $ are propagated in discrete time such that
 \begin{eqnarray}
 	\hat{\x}_{k+1} &=& \A_k \hat{\x}_k + \B_k \u_k \\
@@ -116,11 +118,10 @@ The uncertainty associated with the estimates increases as the state is propagat
 	\hat{\x}_k^+ &=& \hat{\x}_k^- + \K_k[\tilde{\y}_k- \H_k \hat{\x}_k^-)] \\
 	\P_k^+ &=& [\mathbf{I} - \K_k \H_k]\P_k^-
 \end{eqnarray}
-
+%
 \noindent where the updated estimates, their covariance and the Kalman gain are $ \mathbf{x}_k^+ $, $ \mathbf{P}_k^+ $, and $ \K_k $ respectively. The Kalman gain is optimal and the error dynamics of the filter are shown to be stable \cite{Crassidis} using the Lyapunov candidate function $ V(\e) = \e_k^T P_k^{-1} \e_k $ where $ \e_k \equiv \hat{\x}_k - \x_k $. The filter as described above is defined for linear systems, and it has been extended to nonlinear systems.
 
 \subsection{Extended Kalman Filter}
-
 Simple models used to describe legged locomotion have nonlinear dynamics and a variation of the Kalman filter named the Extended Kalman Filter (EKF) can be used for these systems. The nonlinear dynamics are linearized about the state estimate to work around the nonlinearity. As this linearization is an approximation of the dynamics, the EKF is not optimal like the discrete-time Kalman filter described previously. In spite of the lack of optimality, EKFs have been in widespread use for nonlinear systems. Since most nonlinear dynamics are given in continuous time, a variation of the EKF called the Continuous-Discrete EKF may be used. In this variation, dynamics evolve in continuous time, and measurements are modeled in discrete time. This combination is used for estimation in the work presented herein as it most closely reflects the model and measurement conditions observed in the estimation problem being studied. The general structure of the EKF is similar to the filter presented previously, except the equations are nonlinear as seen by comparing Eq. \eqref{eq:sys_disc} and \eqref{eq:sys}. Consider the following dynamical system with nonlinear dynamics
 % Continuous-Discrete EKF
 %
@@ -137,13 +138,12 @@ The state estimates and estimate covariance $ \P $ are propagated in continuous 
 	\dot{\P}(t) &=& \F(t)\P(t) + \P(t)\F^T(t) + \mathbf{G}(t)\Q(t)\mathbf{G}(t)^T \\ 
 	\F(t) &\equiv& \frac{\partial \mathbf{f}}{\partial \x} \Bigr |_{\hat{\x}(t),\u(t)} \nonumber
 \end{eqnarray}
-
-
+%
 \noindent The states are sequentially updated such that
 \begin{eqnarray}
 	\K_k &=& \P_k^- \H^T_k(\hat{\x}_k^-) \left[\H_k(\hat{\x}_k^-)\P_k^- \H^T_k(\hat{\x}_k^-) + \R_k\right]^{-1} \\
 	\hat{\x}_k^+ &=& \hat{\x}_k^- + \K_k[\tilde{\y}_k-\mathbf{h}(\x_k)] \\
 	\P_k^+ &=& [\mathbf{I} - \K_k \H_k(\hat{\x}_k^-)]\P_k^-,\quad \H_k(\hat{\x}_k^-) \equiv \frac{\partial \mathbf{h}}{\partial \x} \Bigr |_{\hat{\x}_k^-}
 \end{eqnarray}
-
+%
 \noindent where $ \K_k $ is the Kalman gain, $ \F(t) $, and $ \H_k(\hat{\x}_k^-) $ are the linearized dynamics and measurement model respectively. The updated estimates and their covariance are $ \mathbf{x}_k^+ $ and $ \mathbf{P}_k^+ $ respectively. The above equations describe a Continous-Discrete Kalman filter setup. System dynamics are propagated in continuous time but states are updated in discrete time since measurements are discrete. This setup handles the nonlinear dynamics of the models used to emulate legged locomotion. Each step of human walking has alternating single and double support periods depending on how many legs are in contact with the ground. Therefore, addition to being nonlinear, models of legged locomotion have hybrid dynamics to describe different gait phases i.e., different dynamics for different phases. The EKF can be used as an estimation tool to handle these hybrid dynamics in a framework known as Interacting Multi-Model (IMM) estimation. This framework is used in Chapter~\ref{chapter:IMM} to estimate an exoskeleton user's gait speed and gait phase.
