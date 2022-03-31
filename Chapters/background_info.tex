@@ -97,14 +97,14 @@ Kalman filtering is a feedback-based sequential optimal estimation technique \ci
 Kalman filters follow a predictor-corrector scheme in which states are propagated using a model of system dynamics which may be incomplete. These states are then corrected using the residual between sensor measurements and the predictions. If the feedback gain applied to this residual is too low, state estimates will not be appropriately corrected, and if the gain is too high, the noise model will overshadow the system dynamics and the estimates will begin tracking noise. Kalman filtering presents an optimal method of computing feedback gain that accounts for modeling and measurement errors with a fundamental assumption that any modeling or measurement errors are zero-mean Gaussian noise processes. The filter was originally proposed for discrete-time linear systems. 
  
 \subsection{Discrete-time Kalman Filter}
-The filter is initialized at a certain initial state estimate $ \hat{\x}_0 $ that may have associated uncertainty due to measurement errors. The evolution of this state is described using dynamical system presented in the following equations
+The filter is initialized at a certain initial state estimate $ \xh_0 $ that may have associated uncertainty due to measurement errors. The evolution of this state is described using dynamical system presented in the following equations
 %
 \begin{eqnarray}
 	\x_{k+1} &=& \A_k \x_k + \B_k \u_k + \mathbf{G} \mathbf{w}_k,\quad \mathbf{w}_k \sim \mathcal{N}(0, \Q_k) \label{eq:sys_disc}  \\
-	\tilde{\y}_k &=& \H_k \x_k + \mathbf{v}_k,\quad \mathbf{v}_k \sim \mathcal{N}(0,\R_k) \label{eq:meas_lin}
+	\yt_k &=& \H_k \x_k + \mathbf{v}_k,\quad \mathbf{v}_k \sim \mathcal{N}(0,\R_k) \label{eq:meas_lin}
 \end{eqnarray}
 %
-\noindent where $ \x_k $ and $ \u_k $ are the discrete-time states and inputs, $ \y_k $ are the discrete-time measurements, $ \A_k $, $ \B_k $, $ \H_k $ are the system, input, and measurement models respectively. The system has zero-mean Gaussian noises for process noise $ \mathbf{w}_k $ and measurement noise $ \mathbf{v}_k $ with covariances  $ \Q_k $ and $ \R_k $ respectively. The measurement noise $ \mathbf{w}(t) $ is combined with the measurement equation $ \H_k \x_k$ to form the noisy measurement $ \tilde{\y}_k $. 
+\noindent where $ \x_k $ and $ \u_k $ are the discrete-time states and inputs, $ \y_k $ are the discrete-time measurements, $ \A_k $, $ \B_k $, $ \H_k $ are the system, input, and measurement models respectively. The system has zero-mean Gaussian noises for process noise $ \mathbf{w}_k $ and measurement noise $ \mathbf{v}_k $ with covariances  $ \Q_k $ and $ \R_k $ respectively. The measurement noise $ \mathbf{w}(t) $ is combined with the measurement equation $ \H_k \x_k$ to form the noisy measurement $ \yt_k $. 
 %
 \begin{figure}
 	\centering
@@ -114,17 +114,17 @@ The filter is initialized at a certain initial state estimate $ \hat{\x}_0 $ tha
 %
 The uncertainty associated with the estimates increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to update the state estimates and reduce the uncertainty as illustrated in Fig.~\ref{fig:kalman} where the $ + $ and $ - $ in the superscript denote pre- and post-update states. The system illustrated here is discrete, however, a continuous state evolution is shown to better illustrate the growth in uncertainty. Kalman filters account for both, the uncertainty in the state estimates and the measurements. Further details of this process are as follow. The state estimates and estimate covariance $ \P $ are propagated in discrete time such that
 \begin{eqnarray}
-	\hat{\x}_{k+1} &=& \A_k \hat{\x}_k + \B_k \u_k \\
+	\xh_{k+1} &=& \A_k \xh_k + \B_k \u_k \\
 	\P_{k+1} &=& \A_k\P_k \A_k^T + \mathbf{G}_k\Q_k\mathbf{G}_k^T 
 \end{eqnarray}
 \noindent The states are sequentially updated such that
 \begin{eqnarray}
 	\K_k &=& \P_k^- \H^T_k \left[\H_k \P_k^- \H^T_k + \R_k\right]^{-1} \\
-	\hat{\x}_k^+ &=& \hat{\x}_k^- + \K_k[\tilde{\y}_k- \H_k \hat{\x}_k^-)] \\
+	\xh_k^+ &=& \xh_k^- + \K_k[\yt_k- \H_k \xh_k^-)] \\
 	\P_k^+ &=& [\mathbf{I} - \K_k \H_k]\P_k^-
 \end{eqnarray}
 %
-\noindent where the updated estimates, their covariance and the Kalman gain are $ \mathbf{x}_k^+ $, $ \mathbf{P}_k^+ $, and $ \K_k $ respectively. The Kalman gain is optimal and the error dynamics of the filter are shown to be stable \cite{Crassidis} using the Lyapunov candidate function $ V(\e) = \e_k^T P_k^{-1} \e_k $ where $ \e_k \equiv \hat{\x}_k - \x_k $. The filter as described above is defined for linear systems, and it has been extended to nonlinear systems.
+\noindent where the updated estimates, their covariance and the Kalman gain are $ \mathbf{x}_k^+ $, $ \mathbf{P}_k^+ $, and $ \K_k $ respectively. The Kalman gain is optimal and the error dynamics of the filter are shown to be stable \cite{Crassidis} using the Lyapunov candidate function $ V(\e) = \e_k^T P_k^{-1} \e_k $ where $ \e_k \equiv \xh_k - \x_k $. The filter as described above is defined for linear systems, and it has been extended to nonlinear systems.
 
 \subsection{Extended Kalman Filter}
 Simple models used to describe legged locomotion have nonlinear dynamics and a variation of the Kalman filter named the Extended Kalman Filter (EKF) can be used for these systems. The nonlinear dynamics are linearized about the state estimate to work around the nonlinearity. As this linearization is an approximation of the dynamics, the EKF is not optimal like the discrete-time Kalman filter described previously. Despite the lack of optimality, EKFs have been in widespread use for nonlinear systems. Since most nonlinear dynamics are given in continuous time, a variation of the EKF called the Continuous-Discrete EKF may be used. In this variation, dynamics evolve in continuous time, and measurements are modeled in discrete time. This combination is used for estimation in the work presented herein as it most closely reflects the model and measurement conditions observed in the estimation problem being studied. The general structure of the EKF is similar to the filter presented previously, except the equations are nonlinear as seen by comparing Eq. \eqref{eq:sys_disc} and \eqref{eq:sys}. Consider the following dynamical system with nonlinear dynamics
@@ -132,23 +132,23 @@ Simple models used to describe legged locomotion have nonlinear dynamics and a v
 %
 \begin{eqnarray}
 	\dot{\x}(t) &=& \mathbf{f}(\x(t),\u(t),\mathbf{w}(t),t),\quad \mathbf{w}(t) \sim \mathcal{N}(0, \Q(t))  \label{eq:sys}  \\
-	\tilde{\y}_k &=& \mathbf{h}(\x_k) + \mathbf{v}_k,\quad \mathbf{v}_k \sim \mathcal{N}(0,\R_k) \label{eq:meas}
+	\yt_k &=& \mathbf{h}(\x_k) + \mathbf{v}_k,\quad \mathbf{v}_k \sim \mathcal{N}(0,\R_k) \label{eq:meas}
 \end{eqnarray}
 %
-\noindent where $ \x(t) $ and $ \u(t) $ are the continuous-time states and inputs, $ \y_k $ are the discrete-time measurements, and $ \mathbf{f}(\x(t),\u(t),t) $ and $ \mathbf{h}(\x_k) $ are the system and measurement function respectively. The system has zero-mean Gaussian process and measurement noises $ \mathbf{w}(t) $ and $ \mathbf{v}_k $ respectively with covariances $ \Q(t) $ and $ \R_k $ respectively. The measurement noise $ \mathbf{w}(t) $ is combined with the measurement equation $ \mathbf{h}(\x_k) $ to form the noisy measurement $ \tilde{\y}_k $. 
+\noindent where $ \x(t) $ and $ \u(t) $ are the continuous-time states and inputs, $ \y_k $ are the discrete-time measurements, and $ \mathbf{f}(\x(t),\u(t),t) $ and $ \mathbf{h}(\x_k) $ are the system and measurement function respectively. The system has zero-mean Gaussian process and measurement noises $ \mathbf{w}(t) $ and $ \mathbf{v}_k $ respectively with covariances $ \Q(t) $ and $ \R_k $ respectively. The measurement noise $ \mathbf{w}(t) $ is combined with the measurement equation $ \mathbf{h}(\x_k) $ to form the noisy measurement $ \yt_k $. 
 
 The state estimates and estimate covariance $ \P $ are propagated in continuous time such that
 \begin{eqnarray}
-	\dot{\hat{\x}} &=& \mathbf{f}(\hat{\x},\u,t) \\
+	\dot{\xh} &=& \mathbf{f}(\xh,\u,t) \\
 	\dot{\P}(t) &=& \F(t)\P(t) + \P(t)\F^T(t) + \mathbf{G}(t)\Q(t)\mathbf{G}(t)^T \\ 
-	\F(t) &\equiv& \frac{\partial \mathbf{f}}{\partial \x} \Bigr |_{\hat{\x}(t),\u(t)} \nonumber
+	\F(t) &\equiv& \frac{\partial \mathbf{f}}{\partial \x} \Bigr |_{\xh(t),\u(t)} \nonumber
 \end{eqnarray}
 %
 \noindent The states are sequentially updated such that
 \begin{eqnarray}
-	\K_k &=& \P_k^- \H^T_k(\hat{\x}_k^-) \left[\H_k(\hat{\x}_k^-)\P_k^- \H^T_k(\hat{\x}_k^-) + \R_k\right]^{-1} \\
-	\hat{\x}_k^+ &=& \hat{\x}_k^- + \K_k[\tilde{\y}_k-\mathbf{h}(\x_k)] \\
-	\P_k^+ &=& [\mathbf{I} - \K_k \H_k(\hat{\x}_k^-)]\P_k^-,\quad \H_k(\hat{\x}_k^-) \equiv \frac{\partial \mathbf{h}}{\partial \x} \Bigr |_{\hat{\x}_k^-}
+	\K_k &=& \P_k^- \H^T_k(\xh_k^-) \left[\H_k(\xh_k^-)\P_k^- \H^T_k(\xh_k^-) + \R_k\right]^{-1} \\
+	\xh_k^+ &=& \xh_k^- + \K_k[\yt_k-\mathbf{h}(\x_k)] \\
+	\P_k^+ &=& [\mathbf{I} - \K_k \H_k(\xh_k^-)]\P_k^-,\quad \H_k(\xh_k^-) \equiv \frac{\partial \mathbf{h}}{\partial \x} \Bigr |_{\xh_k^-}
 \end{eqnarray}
 %
-\noindent where $ \K_k $ is the Kalman gain, $ \F(t) $, and $ \H_k(\hat{\x}_k^-) $ are the linearized dynamics and measurement model respectively. The updated estimates and their covariance are $ \mathbf{x}_k^+ $ and $ \mathbf{P}_k^+ $ respectively. The above equations describe a Continous-Discrete Kalman filter setup. System dynamics are propagated in continuous time but states are updated in discrete time since measurements are discrete. This setup handles the nonlinear dynamics of the models used to emulate legged locomotion. Each step of human walking has alternating single and double support periods depending on how many legs are in contact with the ground. Therefore, in addition to being nonlinear, models of legged locomotion have hybrid dynamics to describe different gait phases i.e., different dynamics for different phases. The EKF can be used as an estimation tool to handle these hybrid dynamics in a framework known as Interacting Multi-Model (IMM) estimation. This framework is used in Chapter~\ref{chapter:IMM} to estimate an exoskeleton user's gait speed and gait phase.
+\noindent where $ \K_k $ is the Kalman gain, $ \F(t) $, and $ \H_k(\xh_k^-) $ are the linearized dynamics and measurement model respectively. The updated estimates and their covariance are $ \mathbf{x}_k^+ $ and $ \mathbf{P}_k^+ $ respectively. The above equations describe a Continous-Discrete Kalman filter setup. System dynamics are propagated in continuous time but states are updated in discrete time since measurements are discrete. This setup handles the nonlinear dynamics of the models used to emulate legged locomotion. Each step of human walking has alternating single and double support periods depending on how many legs are in contact with the ground. Therefore, in addition to being nonlinear, models of legged locomotion have hybrid dynamics to describe different gait phases i.e., different dynamics for different phases. The EKF can be used as an estimation tool to handle these hybrid dynamics in a framework known as Interacting Multi-Model (IMM) estimation. This framework is used in Chapter~\ref{chapter:IMM} to estimate an exoskeleton user's gait speed and gait phase.
