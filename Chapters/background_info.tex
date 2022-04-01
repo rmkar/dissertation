@@ -119,9 +119,9 @@ The uncertainty associated with the estimates increases as the state is propagat
 \end{eqnarray}
 \noindent The states are sequentially updated such that
 \begin{eqnarray}
-	\K_k &=& \P_k^- \H^T_k \left[\H_k \P_k^- \H^T_k + \R_k\right]^{-1} \\
-	\xh_k^+ &=& \xh_k^- + \K_k[\yt_k- \H_k \xh_k^-)] \\
-	\P_k^+ &=& [\mathbf{I} - \K_k \H_k]\P_k^-
+	\K_k &=& \P_k^- \H^T_k \left[\H_k \P_k^- \H^T_k + \R_k\right]^{-1} \label{eq:kalmanGain} \\
+	\xh_k^+ &=& \xh_k^- + \K_k[\yt_k- \H_k \xh_k^-)] \label{eq:ekfStateUp} \\
+	\P_k^+ &=& [\mathbf{I} - \K_k \H_k]\P_k^-\label{eq:ekfCovUp}
 \end{eqnarray}
 %
 \noindent where the updated estimates, their covariance and the Kalman gain are $ \mathbf{x}_k^+ $, $ \mathbf{P}_k^+ $, and $ \K_k $ respectively. The Kalman gain is optimal and the error dynamics of the filter are shown to be stable \cite{Crassidis} using the Lyapunov candidate function $ V(\e) = \e_k^T P_k^{-1} \e_k $ where $ \e_k \equiv \xh_k - \x_k $. The filter as described above is defined for linear systems, and it has been extended to nonlinear systems.
@@ -139,8 +139,8 @@ Simple models used to describe legged locomotion have nonlinear dynamics and a v
 
 The state estimates and estimate covariance $ \P $ are propagated in continuous time such that
 \begin{eqnarray}
-	\dot{\xh} &=& \mathbf{f}(\xh,\u,t) \\
-	\dot{\P}(t) &=& \F(t)\P(t) + \P(t)\F^T(t) + \mathbf{G}(t)\Q(t)\mathbf{G}(t)^T \\ 
+	\dot{\xh} &=& \mathbf{f}(\xh,\u,t) \label{eq:sysProp}\\
+	\dot{\P}(t) &=& \F(t)\P(t) + \P(t)\F^T(t) + \mathbf{G}(t)\Q(t)\mathbf{G}(t)^T \label{eq:covProp} \\ 
 	\F(t) &\equiv& \frac{\partial \mathbf{f}}{\partial \x} \Bigr |_{\xh(t),\u(t)} \nonumber
 \end{eqnarray}
 %
@@ -151,4 +151,6 @@ The state estimates and estimate covariance $ \P $ are propagated in continuous 
 	\P_k^+ &=& [\mathbf{I} - \K_k \H_k(\xh_k^-)]\P_k^-,\quad \H_k(\xh_k^-) \equiv \frac{\partial \mathbf{h}}{\partial \x} \Bigr |_{\xh_k^-}
 \end{eqnarray}
 %
-\noindent where $ \K_k $ is the Kalman gain, $ \F(t) $, and $ \H_k(\xh_k^-) $ are the linearized dynamics and measurement model respectively. The updated estimates and their covariance are $ \mathbf{x}_k^+ $ and $ \mathbf{P}_k^+ $ respectively. The above equations describe a Continous-Discrete Kalman filter setup. System dynamics are propagated in continuous time but states are updated in discrete time since measurements are discrete. This setup handles the nonlinear dynamics of the models used to emulate legged locomotion. Each step of human walking has alternating single and double support periods depending on how many legs are in contact with the ground. Therefore, in addition to being nonlinear, models of legged locomotion have hybrid dynamics to describe different gait phases i.e., different dynamics for different phases. The EKF can be used as an estimation tool to handle these hybrid dynamics in a framework known as Interacting Multi-Model (IMM) estimation. This framework is used in Chapter~\ref{chapter:IMM} to estimate an exoskeleton user's gait speed and gait phase.
+\noindent where $ \K_k $ is the Kalman gain, $ \F(t) $, and $ \H_k(\xh_k^-) $ are the linearized dynamics and measurement model respectively. The updated estimates and their covariance are $ \mathbf{x}_k^+ $ and $ \mathbf{P}_k^+ $ respectively. The above equations describe a Continous-Discrete Kalman filter setup. System dynamics are propagated in continuous time but states are updated in discrete time since measurements are discrete. This setup handles the nonlinear dynamics of the models used to emulate legged locomotion. 
+
+Each step of human walking has alternating single and double support periods depending on how many legs are in contact with the ground. Therefore, in addition to being nonlinear, models of legged locomotion have hybrid dynamics to describe different gait phases i.e., different dynamics for different phases. The EKF can be used as an estimation tool to handle these hybrid dynamics in a framework known as Interacting Multi-Model (IMM) estimation. This framework is used in Chapter~\ref{chapter:IMM} to estimate an exoskeleton user's gait speed and gait phase.
