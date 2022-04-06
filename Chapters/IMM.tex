@@ -19,7 +19,30 @@ Gait optimization was considered via a nonlinear programming problem
 	\textrm{s.t.}& \quad \vec{g}(\greekvec{\xi}) \leq \epsilon \nonumber
 \end{eqnarray}
 %
-where $ \mat{J}(\greekvec{\xi}) $ was a vector-valued function returning the vertical excursion of the CoM, deviation from a desired step length and width, and the distance from the ground projection of the CoM to the foot at MS. Nonlinear constraint functions $ \vec{g}(\vec{\xi}) $ ensured periodicity of the gait by matching the initial and final positions and velocities of the CoM with respect to the trailing foot to a tolerance $ \epsilon $. Constraints on the step length and width were found to be critical for the convergence of the optimization. Desired step length and width were approximated as a function of speed \cite{andriacchi1977walking} using a polynomial fit to human walking data \cite{fukuchi2018public}. Initially, the trajectories of optimized periodic gaits exhibited lower lateral excursion and higher vertical excursion for the CoM than observed in human data. This behavior was remedied by driving leg stiffness toward an upper limit with 1) the inclusion of $ (k_{max} - k) $ in the cost, and 2) penalizing the maximum vertical excursion of the CoM through its inclusion in $\mathbf{J}(\greekvec{\xi})$. 
+where $ \mat{J}(\greekvec{\xi}) $ was a vector-valued function returning the vertical excursion of the CoM, deviation from a desired step length and width, and the distance from the ground projection of the CoM to the foot at MS with the equations listed in Table.~\ref{table:cost}. Nonlinear constraint functions $ \vec{g}(\vec{\xi}) $ ensured periodicity of the gait by matching the initial and final positions and velocities of the CoM with respect to the trailing foot to a tolerance $ \epsilon $ (Table.~\ref{table:const}). 
+%
+\begin{table}
+	\centering
+	\caption{Components of the gait optimization cost function}\label{table:cost}
+	\input{Chapters/IMM_cost}
+\end{table}
+%
+\begin{table}
+	\centering
+	\caption{Nonlinear constraints for gait optimization}\label{table:const}
+	\input{Chapters/IMM_const}
+\end{table}
+%
+
+The desired step length and width components of the cost were found to be critical for the convergence of the optimization. Step length $ l_{step} $ and width $ w_{step} $ depend on gait speed \cite{andriacchi1977walking}. These quantities were approximated as polynomial functions of the target gait velocity $ v_x $ with initial CoM height as a proxy for leg length, such that
+\begin{eqnarray}
+	l_{step} &=& [1\ v_x\ v_x^2\ z_{0_{CoM}} v_x] \greekvec{\gamma}_l \\
+	w_{step} &=& [1\ v_x\ v_x^2\ z_{0_{CoM}} v_x] \greekvec{\gamma}_w
+\end{eqnarray}
+%
+where $ \greekvec{\gamma}_l $ and $ \greekvec{\gamma}_w $ are the coefficients for step length and width respectively computed by fitting to human walking data of people under the age of 40 for treadmill and overground walking. The RMS error for this polynomial fit was approximately 3 cm for both, step length and width which was lower than the standard deviation of the measured data which was 9.7 cm and 3.4 cm respectively.
+
+Initially, the trajectories of optimized periodic gaits exhibited lower lateral excursion and higher vertical excursion for the CoM than observed in human data. This behavior was remedied by driving leg stiffness toward an upper limit with 1) the inclusion of $ (k_{max} - k) $ in the cost, and 2) penalizing the maximum vertical excursion of the CoM through its inclusion in $\mathbf{J}(\greekvec{\xi})$. 
 
 As speed decreased, it was progressively difficult to choose appropriate parameters to seed the optimization, as the sensitivity of the model to initial conditions increased due to low passive stability at low speeds \cite{kuo2001simple}. This was an important challenge to overcome as gait speeds during rehabilitation are low \cite{seethapathi2015metabolic}. A predictor-corrector scheme was applied to start at a high-speed gait and compute appropriate seeds for low-speed gaits. 
 
@@ -98,8 +121,8 @@ The magnitude of the weight $\fsup{w_k}{j}$ indicates the relative confidence of
 
 Following the computation of the likelihood for each model, the noisy measurement $\yt_k$ is used with the Kalman update in Eq. \eqref{eq:kalmanGain},\eqref{eq:ekfStateUp}, and \eqref{eq:ekfCovUp} to produce \textit{a~posteriori} estimates $\fsup{\x_k^+}{j}$ and covariances $\fsup{\P_k^+}{j}$. These quantities are fused to produce an ensemble estimate $\xh_k$ with covariance $\P_k$ calculated via
 \begin{eqnarray}
-	\xh_k &= \textstyle \sum_{j =1}^{M} \fsup{w_k}{j} \fsup{\xh_k^{+}}{j} \label{eq:estimates} \\
-	\P_k &= \displaystyle \sum_{j =1}^{M} \fsup{w_k}{j}  \left[\left(\fsup{\xh_k^{+}}{j} - \xh_k\right) \left(\fsup{\xh_k^{+}}{j} - \xh_k\right)^T + \fsup{\P_k^{+}}{j} \right] \label{eq:covFuse}
+	\xh_k &=& \textstyle \sum_{j =1}^{M} \fsup{w_k}{j} \fsup{\xh_k^{+}}{j} \label{eq:estimates} \\
+	\P_k &=& \displaystyle \sum_{j =1}^{M} \fsup{w_k}{j}  \left[\left(\fsup{\xh_k^{+}}{j} - \xh_k\right) \left(\fsup{\xh_k^{+}}{j} - \xh_k\right)^T + \fsup{\P_k^{+}}{j} \right] \label{eq:covFuse}
 \end{eqnarray}
 Fusion from \eqref{eq:covFuse} captures the covariance of each individual filter and of each filter estimate with the fused estimate.
 
@@ -114,8 +137,8 @@ where  $ \fsup{w_k}{(i|j)} $ is a weight that considers a likelihood-based model
 Similarly, a mixed covariance for the next iteration is computed through
 \begin{eqnarray}
 	\label{eq:updateP}
-	\fsup{\P_{k+1}^{0}}{j} &= \sum_{i =1}^{M} \fsup{w_k}{(i|j)} \left[ \fsup{\mathbf{e}_k}{(i|j)} \fsup{\mathbf{e}^{T}_k}{(i|j)} + \fsup{\P_k^{+}}{i} \right]\,,~ \textrm{where}\\[.5ex]
-	\fsup{\mathbf{e}_k}{(i|j)} &= \fsup{\xh_k^{+}}{i} - \fsup{\xh_{k+1}^{0}}{j} \nonumber
+	\fsup{\P_{k+1}^{0}}{j} &=& \sum_{i =1}^{M} \fsup{w_k}{(i|j)} \left[ \fsup{\mathbf{e}_k}{(i|j)} \fsup{\mathbf{e}^{T}_k}{(i|j)} + \fsup{\P_k^{+}}{i} \right]\,,~ \textrm{where}\\[.5ex]
+	\fsup{\mathbf{e}_k}{(i|j)} &=& \fsup{\xh_k^{+}}{i} - \fsup{\xh_{k+1}^{0}}{j} \nonumber
 \end{eqnarray}
 
 \begin{figure}
@@ -127,8 +150,8 @@ Similarly, a mixed covariance for the next iteration is computed through
 A small modification to the conventional IMM was necessary to enable the framework to correctly identify gait modes. 
 The likelihood calculation \eqref{eq:likelihood} only looks at the measurement residual, which can be misleading. Dynamics during DS can track the CoM trajectories from SS data by allowing legs to extend beyond their free length, which is not physically possible. A physical likelihood term $ \lambda_p $ was added to the likelihood calculation to address this observation. This strategy takes into account the difference $\Delta l$ between the rest length and current length of the leg, which should remain positive. The likelihood is then modified as
 \begin{eqnarray} \label{eq:physicalLikelihood}
-	{}^j \ell_k &= {\rm det}(2 \pi \fsup{\E_k}{j})^{-1/2}\   e^{\lambda_r + \lambda_p}\,,~\textrm{where} \\[.5ex]
-	\lambda_p &= -\kappa \min(0,\Delta l)^2  \nonumber
+	{}^j \ell_k &=& {\rm det}(2 \pi \fsup{\E_k}{j})^{-1/2}\   e^{\lambda_r + \lambda_p}\,,~\textrm{where} \\[.5ex]
+	\lambda_p &=& -\kappa \min(0,\Delta l)^2  \nonumber
 \end{eqnarray}
 and $ \kappa>0$ is a tuning parameter. In DS, the leg with the minimum value for $\Delta l$ is used to compute $\lambda_p$.
 This approach decreases the weight of a model if its estimated leg length is greater than its rest length. Figure \ref{fig:likeCompare} shows the effect this modification has on phase inference. With the change, the likelihood of DS only rises during the true DS phase, illustrated with the shaded area. The rate at which the likelihood of DS rises and decays can be tuned using $ \kappa $. With these modifications, the IMM framework can be set up to adequately identify the appropriate dynamics, SS or DS, to be used for state estimation at a given time. This IMM framework was first tested with B-SLIP simulation data and then data acquired from the EksoGT exoskeleton.
@@ -170,4 +193,30 @@ Figure~\ref{fig:weightSyn} shows the weights associated with each model over two
 
 \subsection{Testing with Exoskeleton Data}
 
-The estimation framework was then tested on data acquired from the sensors onboard the EksoGT exoskeleton during walking trials of an able-bodied person. The subject had a leg length of 0.95 m, weighed 67 kg, and walked at a self-selected speed between 0.6-0.7 m/s using crutches \cite{gambon2019characterizing}.
+The estimation framework was then tested on data acquired from the sensors onboard the EksoGT exoskeleton during walking trials of an able-bodied person. The subject had a leg length of 0.95 m, weighed 67 kg, and walked at a self-selected speed between 0.6-0.7 m/s using crutches \cite{gambon2019characterizing}. The exoskeleton allows movement only in the sagittal plane and restricts movements in the lateral direction, however, some lateral movement of the CoM is observed due to torso roll. In addition to all the available measurements listed in Sec.~\ref{sec:exoData}, the exoskeleton also reports the estimated height and fore/aft position of the CoM in the global frame. The position of the CoM was approximated and collected in the measurement vector $ \yt = [x_\com ,y_\com ,z_\com]^T $. The evolution of the CoM state of the B-SLIP is sensitive to changes in the leg length of library gaits, particularly in the vertical direction. The parameters that defined the library gaits were rescaled with respect to the estimated CoM height of the exoskeleton user at the initial MS of the estimator trial. Additionally, the following anisotropic process and measurement noise covariances were selected.
+\begin{align}
+		\R &= {\rm diag}([5,5,0.5])\times 10^{-6} \\
+		\Q &={\rm diag}([0,0,0,1,1,10])\times 10^{-2}
+\end{align}
+This covariance mitigates sensitivity by increasing the estimator's reliance on measurements and decreasing the reliance on the model when inferring vertical CoM evolution. This strategy was found to yield more accurate velocity estimates compared to isotropic covariance selection. 
+
+\begin{figure}
+	\centering
+	\includegraphics[width=.8\linewidth]{weightsExo.eps}
+	\caption{Model weights from the IMM framework applied to experimental measurements of an able-bodied individual walking in an exoskeleton.}\label{fig:exoWeights}
+\end{figure}
+
+The most likely gaits for one step of the walking trial are illustrated in Fig.~\ref{fig:exoWeights}; higher weights indicate a more likely gait. The user was walking at a velocity between 0.6-0.7 m/s so the gaits at those speed are shown to be most likely. All library gaits qualitatively matched human data i.e., maximum forward velocity was achieved during DS, and lateral velocity was zero at the end of the step. However, the initial and lateral positions were optimization variables when generating the gait library, and as a result, they do not match the initial position in the measured data. Therefore estimates of CoM velocities, none of which had direct measurements, took $ \approx $50 m/s to stabilize to expected behavior as illustrated in Fig.~\ref{fig:exoState} where estimates are plotted along with measured values. The DS period, illustrated in gray, was determined by foot-mounted force sensors indicated both feet were flat on the ground.
+\begin{figure}
+	\centering
+	\includegraphics[width= 0.7\linewidth]{stateEstExo.eps}
+	\caption{State estimates from the IMM framework applied to experimental measurements of an able-bodied individual walking in an exoskeleton.}\label{fig:exoState}
+\end{figure}
+
+The estimator relies on differences between measured CoM trajectories and simulated CoM trajectories from library gait to infer gait phase and speed. Figure 10 illustrates that while the exoskeleton user was walking at a speed between 0.6 m/s and 0.7 m/s, the CoM trajectory in the saggittal plane matches more closely with the library gait at a speed of 1.0 m/s. This behavior may be due to the dynamics of walking in an exoskeleton with an ambulatory that are not emulated by the B-SLIP model. The IMM framework was able to identify the correct gait velocity and phase of the measured data over a majority of the step despite the mismatch in trajectories. The library contains gaits at 0.6 m/s and 0.7 m/s which are indicated as most likely in Fig.~\ref{fig:exoWeights} as the user's actual gait velocity was between those two values. Thus the IMM framework functions as expected, but relies on accurate emulation of CoM trajectories from library gaits for accurate estimation.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=.8\linewidth]{gaitCompare.pdf}
+	\caption{Comparison of gaits at speeds of 0.6 m/s  (left) and 1.0 m/s  (right).}\label{fig:compare}
+\end{figure}
