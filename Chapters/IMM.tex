@@ -3,7 +3,9 @@ The target population of this work is individuals with iSCIs, so the gait veloci
 
 There are often physical changes to the gait as a result of changes in intended velocity, such as changes in step frequency, step length, and CoM trajectories \cite{kuo2001simple}. Template models emulate the salient characteristics of legged locomotion such as CoM trajectories and ground reaction force (GRF) profiles \cite{mochon1980ballistic}. Therefore, they may also emulate the changes in CoM trajectories and step length corresponding to changes in intent. The purpose of this contribution is to estimate gait characteristics such as gait phase and velocity through the comparison of sensor measurements to gaits from models of bipedal locomotion, specifically the B-SLIP model. The main idea behind the estimation framework developed is to estimate a person's desired gait velocity and phase by comparing the measured CoM trajectory to those in a library of B-SLIP gaits. 
 
-The challenges were the increased difficulty in finding low-speed gaits during gait library generation and handling the hybrid dynamics of legged locomotion used to describe the different gait phases. The work done to address these challenges is described in this chapter. A linearization-based seed search method was developed to search for gaits at low walking speeds (less than 0.8 m/s). Additionally, Interacting Multi-Model (IMM) estimation was used to handle hybrid dynamics along with the library gaits. This chapter describes and the results reported in a previous conference publication \cite{karulkarapplication}.
+User intent estimation may not necessary be limited to forward velocity. Other aspects of intent changes not considered herein are the user's desires to initiate/terminate gait, change heading, and to change gait mode i.e., transitions form walking on flat ground to ramps or stairs. In theory, the presented IMM framework may be extended to all the these scenarios, with appropriate models of locomotion e.g., the B-SLIP model cannot describe gait initiation/termination. Considering multiple aspects of intent change for estimation at once may present difficulties as they may influence the gait differently and complicate the estimation problem via crosstalk. Considering only the gait velocity as a starting point helps break the estimation problem into a smaller subsection and reduce the challenges faced during estimation.
+
+The challenges faced during estimation were the increased difficulty in finding low-speed peridic gaits during gait library generation and handling the hybrid dynamics of legged locomotion used to describe the different gait phases. The work done to address these challenges is described in this chapter. A linearization-based seed search method was developed to search for gaits at low walking speeds (less than 0.8 m/s). Additionally, Interacting Multi-Model (IMM) estimation was used to handle hybrid dynamics along with the library gaits. This chapter describes and the results reported in a previous conference publication \cite{karulkarapplication}.
 
 \section{Generating the gait library using the B-SLIP model}
 
@@ -12,14 +14,6 @@ Qualitative differences in the CoM trajectories of humans walking at different w
 As described in Section~\ref{sec:bslip_model}, the state vector representing the CoM is $ \x_{CoM} = \left[x_{CoM} ,y_{CoM} ,z_{CoM} ,\dot{x}_{CoM} ,\dot{y}_{CoM} ,\dot{z}_{CoM}\right]^T $. The remaining parameters of the model, leg angles and stiffness, are collected in a parameter vector $ \greekvec{\zeta} = [\phi, \theta ,k ,z_{0_{CoM}} ,y_{0_{CoM}} ,\dot{x}_{0_{CoM}}]^T $ where $ \theta $ and $ \phi $ are leg angles that govern step length and width, and variables $ z_{0_{CoM}}$, $y_{0_{CoM}}$, and $\dot{x}_{0_{CoM}} $ give the vertical position, lateral position, and forward velocity of the CoM relative to the stance foot at the beginning of the step. The lack of actuators means optimization methods must be used to find periodic gaits for the B-SLIP model. An optimization procedure was carried out to find the parameters that would yield a fixed point for an MS-to-MS Poincar\'e map.
 
 \subsection{Gait Optimization}
-Gait optimization was considered via a nonlinear programming problem
-%
-\begin{eqnarray}
-	\min_{\greekvec{\xi}}& \quad \lVert{\mat{J}(\greekvec{\xi})}\rVert ^2 + (k_{max} - k) \label{eq:gaitOpt}\\
-	\textrm{s.t.}& \quad \vec{g}(\greekvec{\xi}) \leq \epsilon \nonumber
-\end{eqnarray}
-%
-where $ \mat{J}(\greekvec{\xi}) $ was a vector-valued function returning the vertical excursion of the CoM, deviation from a desired step length and width, and the distance from the ground projection of the CoM to the foot at MS with the equations listed in Table.~\ref{table:cost}. Nonlinear constraint functions $ \vec{g}(\vec{\xi}) $ ensured periodicity of the gait by matching the initial and final positions and velocities of the CoM with respect to the trailing foot to a tolerance $ \epsilon $ (Table.~\ref{table:const}). 
 %
 \begin{table}
 	\centering
@@ -27,12 +21,17 @@ where $ \mat{J}(\greekvec{\xi}) $ was a vector-valued function returning the ver
 	\input{Chapters/IMM_cost}
 \end{table}
 %
-\begin{table}
-	\centering
-	\caption{Nonlinear constraints for gait optimization}\label{table:const}
-	\input{Chapters/IMM_const}
-\end{table}
+
+Gait optimization was considered via a nonlinear programming problem
 %
+\begin{eqnarray}
+	\min_{\greekvec{\xi}}& \quad \lVert{\mat{J}(\greekvec{\xi})}\rVert ^2 + (k_{max} - k) \label{eq:gaitOpt}\\
+	\textrm{s.t.}& \quad \vec{g}(\greekvec{\xi}) \leq \epsilon \nonumber
+\end{eqnarray}
+%
+where $ \mat{J}(\greekvec{\xi}) $ was a vector-valued function returning the vertical excursion of the CoM, deviation from a desired step length and width, and the distance from the ground projection of the CoM to the foot at MS with the equations listed in Table.~\ref{table:cost}. This cost function was designed to optimize periodic gaits that qualitatively resemble human walking. It was found that gaits optimized using periodicity as the sole criterion showed lower lateral and higher vertical CoM excursion than what was observed for human walking resulting in narrow step widths and step lengths. These factors resulted in CoM trajectories that did not resemble human walking. 
+
+To ensure resemblance to CoM trajectories seen in humans, a penalty was added on the maximum vertical excursion of the CoM to flatten the trajectory in the sagittal plane. Secondly, since the mass loaded onto the spring is essentially in free-fall during SS1, the distance of the CoM from the stance foot was penalized to encourage more lateral excursion during SS1. Increased lateral excursion was further encouraged by driving leg stiffness toward an upper limit with the inclusion of $ (k_{max} - k) $ in the cost. Additionally, values for desired step length and width were included in the cost function to better emulate human walking.
 
 The desired step length and width components of the cost were found to be critical for the convergence of the optimization. Step length $ l_{step} $ and width $ w_{step} $ depend on gait speed \cite{andriacchi1977walking}. These quantities were approximated as polynomial functions of the target gait velocity $ v_x $ with initial CoM height as a proxy for leg length, such that
 \begin{eqnarray}
@@ -42,7 +41,14 @@ The desired step length and width components of the cost were found to be critic
 %
 where $ \greekvec{\gamma}_l $ and $ \greekvec{\gamma}_w $ are the coefficients for step length and width respectively computed by fitting to human walking data of people under the age of 40 for treadmill and overground walking. The RMS error for this polynomial fit was approximately 3 cm for both, step length and width which was lower than the standard deviation of the measured data which was 9.7 cm and 3.4 cm respectively.
 
-Initially, the trajectories of optimized periodic gaits exhibited lower lateral excursion and higher vertical excursion for the CoM than observed in human data. This behavior was remedied by driving leg stiffness toward an upper limit with 1) the inclusion of $ (k_{max} - k) $ in the cost, and 2) penalizing the maximum vertical excursion of the CoM through its inclusion in $\mathbf{J}(\greekvec{\xi})$. 
+Nonlinear constraint functions $ \vec{g}(\vec{\xi}) $ ensured periodicity of the gait by matching the initial and final positions and velocities of the CoM with respect to the trailing foot to a tolerance $ \epsilon $ (Table.~\ref{table:const}). 
+%
+\begin{table}
+	\centering
+	\caption{Nonlinear constraints for gait optimization}\label{table:const}
+	\input{Chapters/IMM_const}
+\end{table}
+%
 
 As speed decreased, it was progressively difficult to choose appropriate parameters to seed the optimization, as the sensitivity of the model to initial conditions increased due to low passive stability at low speeds \cite{kuo2001simple}. This was an important challenge to overcome as gait speeds during rehabilitation are low \cite{seethapathi2015metabolic}. A predictor-corrector scheme was applied to start at a high-speed gait and compute appropriate seeds for low-speed gaits. 
 
@@ -97,12 +103,13 @@ To generate a suitable next seed, the forward velocity component of $ \delta \x_
 	\end{overpic}
 	\caption{IMM scheme used to estimate gait phase and walking speed.}\label{fig:IMM}
 \end{figure}
-The IMM is a technique to  adaptively fuse estimates from multiple filters, running in parallel. Despite their use in other hybrid systems (\cite{bar2005imm},\cite{daeipour1998imm}), application of IMMs to legged locomotion has been minimal. One example is the use of IMMs for legged locomotion is in state estimation and gait phase prediction for RHex \cite{skaff2005context}, a six-legged robot with compliant legs. 
+The IMM is a technique to  adaptively fuse estimates from multiple filters, running in parallel. Despite their use in other hybrid systems (\cite{bar2005imm},\cite{daeipour1998imm}), application of IMMs to legged locomotion has been minimal. One example is the use of IMMs for legged locomotion is in state estimation and gait phase prediction for RHex \cite{skaff2005context}, a six-legged robot with compliant legs. Gait phase estimation is possible by directly using force
+sensors in the exoskeleton soles \cite{agostini2013segmentation,de2012gait}. However, by relating human data to template models, the presented approach may provide insight into unmeasured parameters, such as leg stiffness, and the effects of changes in them on the gait.
 
 The IMM estimation process used in this work is illustrated in Fig. \ref{fig:IMM}. Each of the $M$ filters represents a different candidate gait and phase, and the IMM attempts to determine which of the phases is most likely. 
 In what follows, $ i $ and $ j $ index over filters, and $ k$ indexes over time. There are two types of estimate interactions shown in Fig.~\ref{fig:IMM}. First, a likelihood-based mixing produces an ensemble estimate output from the IMM, while a Markov mixing relates the state estimates from the filters at time step $k$ to the initial estimates at time step $k+1$. 
 
-The filters begin with initial state estimates $\fsup{\xh_k^0}{j}$ and covariances $\fsup{\P_k^0}{j}$ that are propagated forward to $\fsup{\xh_k^-}{j}$ and $\fsup{\P_k^-}{j}$ using the dynamics presented in Eq.~\eqref{eq:sysProp} and~\eqref{eq:covProp}. The measurement likelihood ${}^j  \ell_k$ is then calculated for the state estimate of each filter as
+The filters begin with initial state estimates $\fsup{\xh_k^0}{j}$ and covariances $\fsup{\P_k^0}{j}$ that are propagated forward to $\fsup{\xh_k^-}{j}$ and $\fsup{\P_k^-}{j}$ using the dynamics presented in Eq.~\eqref{eq:sysProp} and~\eqref{eq:covProp}. Measurements from the exoskeleton sensors are used to initialize the filter at start-up and the covariance is set to be an identity matrix. The measurement likelihood ${}^j  \ell_k$ is then calculated for the state estimate of each filter as
 \begin{align} \label{eq:likelihood}
 	{}^j \ell_k &= p(\yt_k|\fsup{\xh_k^-}{j})  = {\rm det}( 2 \pi \fsup{\E_k}{j})^{-1/2} \,  {e}^{\lambda_r} \,~\textrm{where}\\[.5ex]
 	\lambda_r &= -\frac{1}{2}\ {}^j\e_k^T \, \fsup{\E_k^{-1}}{j} \, \fsup{\e_k}{j} \nonumber
@@ -209,14 +216,24 @@ This covariance mitigates sensitivity by increasing the estimator's reliance on 
 The most likely gaits for one step of the walking trial are illustrated in Fig.~\ref{fig:exoWeights}; higher weights indicate a more likely gait. The user was walking at a velocity between 0.6-0.7 m/s so the gaits at those speed are shown to be most likely. All library gaits qualitatively matched human data i.e., maximum forward velocity was achieved during DS, and lateral velocity was zero at the end of the step. However, the initial and lateral positions were optimization variables when generating the gait library, and as a result, they do not match the initial position in the measured data. Therefore estimates of CoM velocities, none of which had direct measurements, took $ \approx $50 m/s to stabilize to expected behavior as illustrated in Fig.~\ref{fig:exoState} where estimates are plotted along with measured values. The DS period, illustrated in gray, was determined by foot-mounted force sensors indicated both feet were flat on the ground.
 \begin{figure}
 	\centering
-	\includegraphics[width= 0.7\linewidth]{stateEstExo.eps}
+	\includegraphics[width= 0.8\linewidth]{stateEstExo.eps}
 	\caption{State estimates from the IMM framework applied to experimental measurements of an able-bodied individual walking in an exoskeleton.}\label{fig:exoState}
 \end{figure}
-
-The estimator relies on differences between measured CoM trajectories and simulated CoM trajectories from library gait to infer gait phase and speed. Figure 10 illustrates that while the exoskeleton user was walking at a speed between 0.6 m/s and 0.7 m/s, the CoM trajectory in the saggittal plane matches more closely with the library gait at a speed of 1.0 m/s. This behavior may be due to the dynamics of walking in an exoskeleton with an ambulatory that are not emulated by the B-SLIP model. The IMM framework was able to identify the correct gait velocity and phase of the measured data over a majority of the step despite the mismatch in trajectories. The library contains gaits at 0.6 m/s and 0.7 m/s which are indicated as most likely in Fig.~\ref{fig:exoWeights} as the user's actual gait velocity was between those two values. Thus the IMM framework functions as expected, but relies on accurate emulation of CoM trajectories from library gaits for accurate estimation.
 
 \begin{figure}
 	\centering
 	\includegraphics[width=.8\linewidth]{gaitCompare.pdf}
 	\caption{Comparison of gaits at speeds of 0.6 m/s  (left) and 1.0 m/s  (right).}\label{fig:compare}
 \end{figure}
+
+The estimator relies on differences between measured CoM trajectories and simulated CoM trajectories from library gait to infer gait phase and speed. Figure 10 illustrates that while the exoskeleton user was walking at a speed between 0.6 m/s and 0.7 m/s, the CoM trajectory in the saggittal plane matches more closely with the library gait at a speed of 1.0 m/s as shown in Fig.~\ref{fig:compare}. This behavior may be due to the dynamics of walking in an exoskeleton with an ambulatory device that are not emulated by the B-SLIP model. The IMM framework was able to identify the correct gait velocity and phase of the measured data over a majority of the step despite the mismatch in trajectories. The library contains gaits at 0.6 m/s and 0.7 m/s which are indicated as most likely in Fig.~\ref{fig:exoWeights} as the user's actual gait velocity was between those two values. Thus the IMM framework functions as expected, but relies on accurate emulation of CoM trajectories from library gaits for accurate estimation.
+
+Inaccuracies in the likelihoods of some phases were observed around phase transitions can be seen in Fig.~\ref{fig:weightSyn} and Fig.~\ref{fig:exoWeights}. This behavior is an artifact of the variety of the gait library. Computation of the physical likelihood depends on the leg length, which is the same across all library gaits. However, each of these gaits have different step lengths as the gait velocities are different. As a result, the durations of the DS phase for each of these gaits is also different. Therefore, even with the leg length rescaling, the discrepancy between the human data and library gaits causes the likelihood function to detect DS and infer the end of SS1 at different times, which causes differences in likelihood switching times. The combined state estimates of the CoM positions are still accurate to within 1cm of the measurements despite this (Fig.~\ref{fig:exoState}).
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{trajDiff}
+	\caption{CoM trajectories for two steps of the same subject walking at steady-state with a self-selected gait speed using a walker vs. crutches.}\label{fig:trajDiff}
+\end{figure}
+
+In conclusion, the IMM framework is capable of estimating an exoskeleton user's intended gait and phase by comparing measured CoM trajectories of exoskeleton users to simulated B-SLIP gaits. The measured CoM trajectories are asymmetric and it is difficult to generate high-fidelity matching B-SLIP gaits. Center of mass trajectories are influenced by a variety of factors such as the choice of ambulatory device, and gait features such as gait speed, and individual joint resulting from uncoordinated limb movements. Figure~\ref{fig:trajDiff} shows the CoM trajectories of the same subject over two steps walking at steady-state using a walker and crutches. The step length and therefore, step duration, were shorter when the walker was being used resulting in considerably different trajectories. Therefore, it may be hypothesized that changes in the factors affecting gait add up to influence CoM trajectory. It may not always be possible to predict these changes with simple template model such as the B-SLIP, therefore, the IMM framework may be used as a high-level framework that may be supplemented by another estimator to monitor the gait features that affect CoM trajectories. The reactive nature of this framework may also be addressed by considering these gait features and relating them to changes in gait velocity.
