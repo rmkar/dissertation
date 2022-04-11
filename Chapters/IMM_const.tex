@@ -1,0 +1,22 @@
+\small
+\begin{tabular}{|c|m{0.7\linewidth}|}
+	\hline
+	Constraint	& \multicolumn{1}{c|}{Description} \\
+	\hline
+	$ (x_{foot_A} - x_{f_{CoM}})^2 $	& Match distance of CoM ground projection to foot at MS. \\
+	\hline
+	$ (\dot{x}_{0_{CoM}} - \dot{x}_{f_{CoM}} )^2 $	&  Match initial and final forward velocity of the CoM. \\
+	\hline
+	$ (z_{0_{CoM}} - z_{f_{CoM}})^2 $	& Match initial and final vertical velocity of the CoM. \\
+	\hline
+	$ \dot{y}_{f_{CoM}}^2 $ & Ensure CoM has no lateral velocity at MS \\
+	\hline
+\end{tabular}
+
+%\begin{eqnarray}
+%	(z_{0_{CoM}} &-& z_{f_{CoM}})^2 \\
+%	(x_{foot_B}) &-& x_{f_{CoM}})^2 \\
+%	(y_{foot_B}) &-& y_{f_{CoM}})^2 \\
+%	(\dot{x}_{0_{CoM}} &-& \dot{x}_{f_{CoM}} )^2\\
+%	&\dot{y}_{f_{CoM}}^2
+%\end{eqnarray}
