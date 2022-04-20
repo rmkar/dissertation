@@ -52,7 +52,7 @@ Nonlinear constraint functions $ \vec{g}(\vec{\xi}) $ ensured the periodicity of
 
 As speed decreased, it was progressively difficult to choose appropriate parameters to seed the optimization, as the sensitivity of the model to initial conditions increased due to low passive stability at low speeds \cite{kuo2001simple}. This was an important challenge to overcome as gait speeds during rehabilitation are low \cite{seethapathi2015metabolic}. A predictor-corrector scheme was applied to start at a high-speed gait and compute appropriate seeds for low-speed gaits. 
 
-\subsection{Linearization-based Seed Search}
+\subsection{Linearization-based seed search}
 
 \begin{figure}
 	\centering
@@ -91,7 +91,7 @@ where $\x_{k+1}^* = \mathcal{P}(\x_k^*, \u_k^*)$, $\delta \x_k = \x_k - \x^*_k$,
 
 To generate a suitable next seed, the forward velocity component of $ \delta \x_k$ was held constant to the desired change in velocity. Considering \eqref{eq:linEq}, these equations provide 4 constraints for the 6 remaining unknowns, $ \left[\delta y_\com,\ \delta z_\com,\ \delta\dot{y}_\com,\ \delta \phi,\, \delta \theta,\, \delta k\right]^T  $, resulting in 2 degrees of freedom. Perturbations $\delta \x_k$ and $\delta \u_k$ satisfying these equations were computed with a least-norm solution, and the resulting parameters were used to seed the next gait optimization. This homotopy process was repeated until the desired low-velocity gait was optimized, resulting in a library of gaits for a range of speeds. Two libraries were generated: one at 0.4\,m/s - 0.9\,m/s for use with B-SLIP data and another at 0.6\,m/s - 1.0\,m/s for use with exoskeleton measurements, both at increments of 0.1\,m/s. As illustrated in Fig. \ref{fig:library}, generated libraries qualitatively exhibit the vertical and lateral CoM excursion trends that are observed in human data. That is vertical excursion decreases, and lateral excursion increases with a decrease in forward velocity. This linearization-based gait search method makes the generation of low-speed gaits easier and yields a library that serves as the basis for the IMM estimator outlined in the next section.
 
-\section{Interacting Multi-Model Estimation}
+\section{Interacting Multi-Model estimation}
 
 \begin{figure}
 	\centering
@@ -241,5 +241,5 @@ Discrepancies were observed between the measured CoM trajectories and those of B
 
 The ensemble estimate as calculated by the IMM (Eq.~\ref{eq:estimates}) is a weighted summation of estimates from the filter library. As all gaits in the gait library are intended to match human walking, the likelihoods of the corresponding estimates will rarely go to zero. Therefore, the more gaits there are in the library, the more "polluted" the ensemble estimate will be due to irrelevant estimates being included. The implementation of the physical likelihood in Eq.~\ref{eq:physicalLikelihood} mitigates this issue between gait phases, but it does not address this issue when dealing with different filters of the same phase. A similar problem of context-based estimator selection and its scalability was addressed for legged robots by deactivating and reactivating individual filters \cite{skaff2010context} based on measurements from sensors onboard the robot. However, this approach may not capture the variability observed in human walking.
 
-\section{Conclusion}
-In conclusion, the IMM framework is capable of estimating an exoskeleton user's intended gait and phase by comparing measured CoM trajectories of exoskeleton users to simulated B-SLIP gaits. The  quality of these estimates is highly dependent on the quality of the underlying gait library as the estimation relies solely on matching CoM trajectories. Changes in the individual gait variables add up to influence CoM trajectory. It may not always be possible to predict these changes with a simple template model such as the B-SLIP, therefore, the IMM framework may be used as a high-level framework that may be supplemented by another estimator to monitor the individual gait features that affect CoM trajectories. The reactive nature of this framework may also be addressed by considering these gait features and relating them to changes in gait velocity.
+\section{Summary}
+This chapter shows that the IMM framework is capable of estimating an exoskeleton user's intended gait and phase by comparing measured CoM trajectories of exoskeleton users to simulated B-SLIP gaits. The  quality of these estimates is highly dependent on the quality of the underlying gait library as the estimation relies solely on matching CoM trajectories. Changes in the individual gait variables add up to influence CoM trajectory. It may not always be possible to predict these changes with a simple template model such as the B-SLIP, therefore, the IMM framework may be used as a high-level framework that may be supplemented by another estimator to monitor the individual gait features that affect CoM trajectories. The reactive nature of this framework may also be addressed by considering these gait features and relating them to changes in gait velocity.

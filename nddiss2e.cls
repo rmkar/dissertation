@@ -121,7 +121,7 @@
   linktocpage=true,%
   breaklinks=true,%
   bookmarkstype=toc,%
-  colorlinks=false,%
+  %colorlinks=false,%
   pdfpagemode=UseOutlines]{hyperref}
 \RequirePackage{longtable}
 \RequirePackage[flushleft]{threeparttable}
