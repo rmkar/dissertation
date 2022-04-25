@@ -2,10 +2,10 @@
 The IMM estimation framework presented previously is reactive as it monitors signs of gait transition i.e.~if the CoM trajectory after gait transition does not resemble library gaits, the IMM algorithm will misidentify the intended change until after it has been realized. However, anticipative intent inference is more desirable to time the assistance delivery appropriately and help the user realize their intended gait transition. Improper assistance timing may result in the robot resisting the user's actions, hampering HRI fluency. Intent may be anticipatively inferred by identifying the actions the user takes to realize their intent change and using data from gait features to detect them. Actions indicative of intent change may be detected by monitoring the interactions the user has with the exoskeleton and the environment. These interactions may provide an earlier indicator of intent changes compared to CoM or joint motions making it possible to anticipate user intent and provide assistance to the user to help realize the desired objective. 
 
 \section{Quantifying intent - Enabling estimation}
-User intent is an abstract content, so it must be quantified and inferred using a measurable quantity, and this quantification is a design choice. The intended gait speed was chosen to represent user intent as the primary objective of the exoskeletons herein is gait rehabiliation. Estimating the gait speed of an individual may increase the possibility for finer control of the gait and also limit the need to train for multiple discrete scenarios. The state of the exoskeleton user is represented in a vector \[\x = [\mathbf{p}_{CoM}^{\top} ,\mathbf{v}_{CoM}^{\top}]^{\top} \] 
+User intent is an abstract notion, so it must be quantified and inferred using a measurable quantity, and this quantification is a design choice. The intended gait speed was chosen to represent user intent as the primary objective of the exoskeletons herein is gait rehabilitation. Estimating the gait speed of an individual may increase the possibility for finer control of the gait and also limit the need to train for multiple discrete scenarios. The state of the exoskeleton user is represented in a vector \[\x = [\mathbf{p}_{CoM}^{\top} ,\mathbf{v}_{CoM}^{\top}]^{\top} \] 
 To capture intent, the state was extended to include the intended gait velocity $ z $ as a hidden state in an augmented state vector $ \q = [\x^{\top} ,z]^{\top} $. The gait velocity $ z $ only represents the velocity in the sagittal plane. Velocity in the transverse \footnote{The transverse plane is the plane that divides the body into top and bottom parts. } plane (e.g., while turning) is neglected, as the exoskeleton restricts adduction/abduction of the legs. This state augmentation approach allows using the Kalman filter to directly estimate the intended gait speed. 
 
-Previously performed studies of bipedal locomotion give us an idea of how changes in walking gaits corresponding to transitions in user intent. These physical indicators include differences in CoM trajectories and foot placement, as illustrated in Fig.~\ref{fig:main_idea}. Ground contacts greatly influence the stability of legged locomotion, so it was hypothesized that intent will be reflected strongly in the user's choice of ground contacts through foot placement \cite{bhounsule2014foot}. Modulating foot placement while walking is an effective control mechanism to maintain stability \cite{hof2010balance,bhounsule2015control}, and it has been shown that velocity changes at MS influence foot placement at TD \cite{wang2014stepping,redfern1994model}. 
+Previously performed studies of bipedal locomotion give us an idea of how changes in walking gaits correspond to transitions in user intent. These physical indicators include differences in CoM trajectories and foot placement, as illustrated in Fig.~\ref{fig:main_idea}. Ground contacts greatly influence the stability of legged locomotion, so it was hypothesized that intent will be reflected strongly in the user's choice of ground contacts through foot placement \cite{bhounsule2014foot}. Modulating foot placement while walking is an effective control mechanism to maintain stability \cite{hof2010balance,bhounsule2015control}, and it has been shown that velocity changes at MS influence foot placement at TD \cite{wang2014stepping,redfern1994model}. 
 
 \begin{figure}
 	\centering
@@ -15,7 +15,7 @@ Previously performed studies of bipedal locomotion give us an idea of how change
 
 The B-SLIP model may be used to adequately model steady-state walking, and foot placement was found to be critical in optimizing periodic gaits. The model does not inherently capture the active changes required to change speed nor the first-principles humans employ for foot-placement as a function of the desired gait speed. These aspects were initially modeled by designing a controller for the B-SLIP model to emulate human motor control. With such a design, intent changes may be considered analogous to controller setpoint changes. Several theories try to explain human motor control, one of which says that the human sensorimotor system relies on optimal control \cite{todorov2004optimality,sylla2014assessing}. Therefore, we chose to assume the human motor controller to be a Linear Quadratic Regulator (LQR). The MS-to-MS Poincar\'e map was linearized about a periodic gait and the linearized model was used to design a controller that minimized deviations from a specified gait. 
 
-The dynamics of the B-SLIP model are nonlinear and linearizing them about a single periodic gait results in a model valid for a very small portion of the gait which rendered the controller unable to handle large speed changes. A derivative-free technique i.e., the Unscented Transform \cite{manchester2016derivative} were employed to generate a linear model. This technique required integrating dynamics backward in time which was difficult to do for the hybrid dynamics of the B-SLIP model as the gait event timing cannot be fixed. Therefore, due to the lack of first principles that describe human choices to bring about intended gait changes, a data-driven approach was chosen to model the relationship between intended gait speed and foot placement.
+The dynamics of the B-SLIP model are nonlinear and linearizing them about a single periodic gait results in a model valid for a very small portion of the gait which rendered the controller unable to handle large speed changes. A derivative-free technique i.e., the Unscented Transform \cite{manchester2016derivative} was employed to generate a linear model. This technique required integrating dynamics backward in time which was difficult to do for the hybrid dynamics of the B-SLIP model as the gait event timing cannot be fixed. Therefore, due to the lack of first principles that describe human choices to bring about intended gait changes, a data-driven approach was chosen to model the relationship between intended gait speed and foot placement.
 
 \begin{figure}
 	\centering
@@ -55,7 +55,7 @@ where $ \greekvec{\kappa} $ is a vector containing regression coefficients and t
 	\caption{Twice-per-step strategy to estimate user intent}\label{fig:block_diag}
 \end{figure}
 
-The step length model may be used as a measurement model in a Kalman filter framework to relate the intended gait speed to the measured step length. The estimator operates on the the state $ \hat{\q} $ and its covariance $ \P $. In the following equations, the superscripts $ - $ and $ + $ denote pre-/post-update states respectively, the subscripts $ M $ and $ T $ denote MS and TD respectively, and the bar denotes the update location. For instance, $\hat{\q}_{M|T}^+ $ represents the state of the CoM at MS updated at TD. 
+The step length model may be used as a measurement model in a Kalman filter framework to relate the intended gait speed to the measured step length. The estimator operates on the state $ \hat{\q} $ and its covariance $ \P $. In the following equations, the superscripts $ - $ and $ + $ denote pre-/post-update states respectively, the subscripts $ M $ and $ T $ denote MS and TD respectively, and the bar denotes the update location. For instance, $\hat{\q}_{M|T}^+ $ represents the state of the CoM at MS updated at TD. 
 
 Since the footstep model is data-driven and may have inaccuracies, a process noise covariance $ \Q_{T} $ was added to the state estimate covariance $ \P^-_{M|M} $. Additionally, the estimated measurement covariance $ \Ssigma_{yy} $ was computed using the Jacobian of the measurement model $ \H_{T} $ and measurement covariance $ \R_{T} $. The predicted step length from \eqref{eq:stepModel} was compared to the measured step length $ \tilde{\y}_{T} $. The state at MS $ \hat{\q}_{M|M}^- $ and its covariance were then updated using a Bayesian update as shown in \eqref{eq:tdUp} and \eqref{eq:tdCovUp}.
 
@@ -116,9 +116,9 @@ where process noise covariances for positions and velocities are reported with u
 	\caption{Estimator performance for SU and SD trials for an uninjured subject} \label{fig:ab_results}
 \end{figure}
 
-The regression coefficients for the footstep model were $ \greekmat{\kappa} = [0.3325 ,0.2635 ,0.3757]^{\top} $ for this subject. The step lengths for an SU trial are shown in Fig.~\ref{fig:ab_regressor}. The regressed model was able to estimate the footstep to within $ \sim $ 5cm with a RMS error of 2.5cm. Consequently, it will be observed that footstep changes alone provided sufficient information to estimate intent changes in this case. The data in Fig.~\ref{fig:ab_results} illustrates the estimator performance for this trial. The stem plot represents the intent of the user as inferred at TD; a positive value indicates speed-up and a negative value indicates slow-down anticipated for the subsequent MS. The vertical line represents the MS closest to the time the speed-change command was issued and a significant speed change is to be expected after this step. The estimator accurately estimated the speed change for the trials i.e., the value of the signal in the stem plot should be positive for speed-up and negative for slow-down after the command is issued.
+The regression coefficients for the footstep model were $ \greekmat{\kappa} = [0.3325 ,0.2635 ,0.3757]^{\top} $ for this subject. The step lengths for an SU trial are shown in Fig.~\ref{fig:ab_regressor}. The regressed model was able to estimate the footstep to within $ \sim $ 5cm with an RMS error of 2.5cm. Consequently, it will be observed that footstep changes alone provided sufficient information to estimate intent changes in this case. The data in Fig.~\ref{fig:ab_results} illustrates the estimator performance for this trial. The stem plot represents the intent of the user as inferred at TD; a positive value indicates speed-up and a negative value indicates slow-down anticipated for the subsequent MS. The vertical line represents the MS closest to the time the speed-change command was issued and a significant speed change is to be expected after this step. The estimator accurately estimated the speed change for the trials i.e., the value of the signal in the stem plot should be positive for speed-up and negative for slow-down after the command is issued.
 
-The estimator performance for all trials of this subject are aggregated in Table.~\ref{table:ab_results_ag}. The ``Command Step" column refers to the MS when the command was issued and the ``Detection Step" refers to the step during which TD the intent change was detected. Since the user must first process the command given, an intent detection delay of up to one step was deemed permissible. All SU and SD trials fit this criteria. 
+The estimator performance for all trials of this subject is aggregated in Table.~\ref{table:ab_results_ag}. The ``Command Step" column refers to the MS when the command was issued and the ``Detection Step" refers to the step during which TD the intent change was detected. Since the user must first process the command given, an intent detection delay of up to one step was deemed permissible. All SU and SD trials fit this criterion. 
 		
 For further analysis, the estimated change in $ z $ for every step was compared to the measured change. If the speed change sign was correctly anticipated, it was considered a successful trial. The probability of successful intent change inference for the aggregated trials of the uninjured subject was 69\% with a 95\% confidence interval \cite{brown2001interval} of 59\% - 78\%. The estimator has difficulty estimating intent changes when the velocity change is low, i.e., less than $ \sim $ 0.15 m/s due to insufficient changes in step lengths. This may be the reason for a majority of the erroneous estimates.
 %
@@ -128,9 +128,9 @@ For further analysis, the estimated change in $ z $ for every step was compared 
 \subsection{Subject with iSCI}
 
 The following evaluation uses data from trials of IU-2 (Sec.~\ref{sec:exoData}) who had previously experienced an incomplete SCI from the middle to the lower spine (T8 to L2). Individuals with these injuries generally exhibit good upper-body movement, control, and balance, but signals to the hips and legs are affected \cite{reevespinal}. % Had to cite Superman
-For use with such an injury, the exoskeleton was set to adaptive mode. In this mode, the exoskeleton joints follow predefined trajectories and correct any deviations from them. Consequently, intent change is perceived as a deviation from the preset trajectories and therefore the exoskeleton attempts to correct the user's gait. 
+For use with such an injury, the exoskeleton was set to adaptive mode. In this mode, the exoskeleton joints follow predefined trajectories and correct any deviations from them. Consequently, intent change is perceived as a deviation from the preset trajectories, and therefore the exoskeleton attempts to correct the user's gait. 
 
-The nature of the assistance provided in adaptive mode results in a difference in goals of the user and the robot after intent change. As a result, the step lengths did not exhibit significant enough variation or a consistent trend to allow for intent inference by themselves. The lack of step length variation is further supported by the regression coefficients for this subject $ \greekmat{\kappa} = [0.0818	,0.0551	,0.4045]^{\top} $. When compared to the regression coefficients for the model for the uninjured user, the iSCI model regression coefficients for $ v_k $ and $ (z-v_x)$ are smaller by an order of magnitude. This difference in coefficient magnitude shows there was not enough correlation between velocity changes and step length.
+The nature of the assistance provided in adaptive mode results in a difference in the goals of the user and the robot after the intent change. As a result, the step lengths did not exhibit significant enough variation or a consistent trend to allow for intent inference by themselves. The lack of step length variation is further supported by the regression coefficients for this subject $ \greekmat{\kappa} = [0.0818	,0.0551	,0.4045]^{\top} $. When compared to the regression coefficients for the model for the uninjured user, the iSCI model regression coefficients for $ v_k $ and $ (z-v_x)$ are smaller by an order of magnitude. This difference in coefficient magnitude shows there was not enough correlation between velocity changes and step length.
 
 \begin{figure}[tb]
 	\centering
@@ -156,7 +156,7 @@ where noise covariances for positions, velocities, and currents are reported wit
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{curr_v_footsteps.eps}
+	\includegraphics[width=0.75\linewidth]{curr_v_footsteps.eps}
 	\caption{Estimator performance comparison before and after including hip current measurements} \label{fig:c_v_f}
 \end{figure}
 
@@ -189,6 +189,54 @@ The estimator uses simple dynamics that do not use knowledge of legged locomotio
 
 Two possible strategies were considered to increase estimator accuracy in detecting SU/SD changes and predicting the magnitude of the desired velocity. One strategy is to increase the number of gait features considered at touch down. The other is to replace the simple linear models with more complex models such as polynomial models or Gaussian Process Regression (GPR) models.
 
+In general, estimator configurations with two measurements showed improvements in performance over its counterpart with one measurement as evidenced from the probabilities of success listed in Tables~\ref{table:su} and \ref{table:sd}. There was no clear superior configuration as the estimator with the linear model and two measurements performed best for SD trials in terms of both, probability of success and RMS prediction error while the GPR model performed best for SU trials. For both SU and SD trials combined, the linear model with two measurements has a success rate of 72\% and an RMS error of 0.15 m/s whereas the GPR model has a success rate of 70\% with an RMS error of 0.12 m/s. It is important to note that these are aggregate results and while comparing individual trials, configurations with one measurement showed a higher probability of success and RMS prediction error for some trials. The estimator configurations shown in Table \ref{table:su} and \ref{table:sd} are detailed as follows.
+
+\begin{table} %SU
+	\centering
+	\caption{Estimator performance of all configurations for only SU trials} \label{table:su}
+	\small
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		Model & No. of meas. & Probability of success (\%) & RMS error (m/s)\\
+		\hline
+		Linear & 1 & 79 & 0.15 \\
+		\hline
+		Linear & 2 & 82 & 0.12 \\
+		\hline
+		Polynomial & 1 & 61 & 0.14 \\
+		\hline
+		Polynomial & 2 & 76 & 0.12 \\
+		\hline
+		GPR & 1 & 47 & 0.15 \\
+		\hline
+		GPR & 2 & 51 & 0.15 \\
+		\hline
+	\end{tabular}
+\end{table}
+
+\begin{table} %SD
+	\centering
+	\caption{Estimator performance of all configurations for only SD trials} \label{table:sd}
+	\small
+	\begin{tabular}{|c|c|c|c|}
+		\hline
+		Model & No. of meas. & Probability of success (\%) & RMS error (m/s)\\
+		\hline
+		Linear & 1 & 61 & 0.13 \\
+		\hline
+		Linear & 2 & 63 & 0.16 \\
+		\hline
+		Polynomial & 1 & 61 & 0.09 \\
+		\hline
+		Polynomial & 2 & 53 & 0.18 \\
+		\hline
+		GPR & 1 & 79 & 0.09 \\
+		\hline
+		GPR & 2 & 79 & 0.08 \\
+		\hline
+	\end{tabular}
+\end{table}
+
 \subsection{Increasing the number of measurements at touchdown}
 Estimator configuration and the considered measurements have a significant impact on estimator performance. The configurations of the BKF presented in previously were able to anticipate changes in gait speed before they were realized. However, the estimator was not able to precisely estimate the magnitude of the anticipated velocity change. The estimator was configured to rely on only the step length for the trials with an uninjured user and root mean square (RMS) currents of the hip motors during the swing phase were included for the trials with an injured user. Using measurements from more gait features during estimation may be provide more information about the user's desired gait speed and be a possible solution to improve estimator performance.
 
@@ -200,9 +248,9 @@ A training dataset was created for these gait features from a set of 3 SU and SD
 
 \subsection{Estimation using linear models}
 
-A baseline was established by running estimator trials using only measurements of step length at TD. The percentage of successful inference the user's desire to change velocity for every step in the aggregated trials of the uninjured subject was 70\% with a 95\% confidence interval of 60\% - 79\%. Step length was modeled by as described in \eqref{eq:stepModel}. A second model $t_{TD} =  [v_x\ (z - v_x)\ 1] \greekvec{\xi}_{lin}$ was used to establish a relationship between velocity and step frequency where $ \greekvec{\xi}_{lin} $ was calculated similarly to the step length model. The RMS regression error for this model was 0.12s. The values of $ \greekvec{\kappa}_{lin} $ and $ \greekvec{\xi}_{lin} $ were $[0.34 ,0.37 ,0.37]^T$ and $ [-0.45 ,-0.48 ,0.64]^T $ respectively. 
+A baseline was established by running estimator trials using only measurements of step length at TD. The percentage of successful inference of the user's desire to change velocity for every step in the aggregated trials of the uninjured subject was 70\% with a 95\% confidence interval of 60\% - 79\%. Step length was modeled as described in \eqref{eq:stepModel}. A second model $t_{TD} =  [v_x\ (z - v_x)\ 1] \greekvec{\xi}_{lin}$ was used to establish a relationship between velocity and step frequency where $ \greekvec{\xi}_{lin} $ was calculated similarly to the step length model. The RMS regression error for this model was 0.12s. The values of $ \greekvec{\kappa}_{lin} $ and $ \greekvec{\xi}_{lin} $ were $[0.34 ,0.37 ,0.37]^T$ and $ [-0.45 ,-0.48 ,0.64]^T $ respectively. 
 
-The estimator with two measurements was rerun for all trials and consistently had success rates greater than 75\% for SU trials and less than 70\% for SD trials except one, which had a 78\% success rate. The aggregated success rate for all trials increased to  72\% with a 95\% confidence interval~\cite{brown2001interval} of 62\% - 81\% and the aggregate RMS error between the estimated and measured gait speed increased from 0.14 m/s to 0.142 m/s.  These results confirm that including additional measurements at TD may improve the binary estimation accuracy of the estimator. The next step was to explore whether increasing model complexity may reduce the RMS error while maintaining speed change detection accuracy with two candidate model types, polynomial and GPR.
+The estimator with two measurements was rerun for all trials and consistently had success rates greater than 75\% for SU trials and less than 70\% for SD trials except one, which had a 78\% success rate. The aggregated success rate for all trials increased to  72\% with a 95\% confidence interval~\cite{brown2001interval} of 62\% - 81\% and the aggregate RMS error between the estimated and measured gait speed increased from 0.14 m/s to 0.142 m/s.  These results confirm that including additional measurements at TD may improve the binary estimation accuracy of the estimator. The next step was to explore the effects of increasing model complexity on the RMS error and speed change detection accuracy with two candidate model types, polynomial and GPR.
 
 \subsection{Estimation using polynomial models}
 
@@ -235,54 +283,10 @@ Regression was performed on measurements to fit the GP models for $ l_{step} $ a
 
 As listed in \eqref{eq:tdUp} and \eqref{eq:tdCovUp}, the BKF framework needs a Jacobian of the measurement models to perform the Bayesian update at TD. It is possible to compute the Jacobians analytically for the GPR models, however, they were computed numerically to allow changing models and test different kernel functions without significant overhead. As GPR models are probabilistic, the uncertainty of their predictions is was computed and incorporated into the estimator. This inclusion was able to improve the estimation accuracy for the trials and similar updates may not be performed with other model families due to the absence of a kernel function. Over all the SU and SD trials, this configuration had a success rate of 70\% with a confidence interval of 59\% to 79\% with an RMS estimation error of 0.12 m/s. This RMS error was the lowest of all the configurations. This configuration had an accuracy of 79\% for SD trials and 61\% for SU trials.
 
-\subsection{Aggregating the performance of estimator configurations}
-
-In general, estimator configurations with two measurements showed improvements in performance over its counterpart with one measurement as evidenced from the probabilities of success listed in Tables~\ref{table:su} and \ref{table:sd}. There was no clear superior configuration as the estimator with the linear model and two measurements performed best for SD trials in terms of both, probability of success and RMS prediction error while the GPR model performed best for SU trials. For both SU and SD trials combined, the linear model with two measurements has a success rate of 72\% and an RMS error of 0.15 m/s whereas the GPR model has a success rate of 70\% with an RMS error of 0.12 m/s. It is important to note that these are aggregate results and while comparing individual trials, configurations with one measurement showed better probability of success and RMS prediction error for some trials. 
-
-\begin{table} %SU
-	\centering
-	\caption{Estimator performance of all configurations for only SU trials} \label{table:su}
-	\begin{tabular}{|c|c|c|c|}
-		\hline
-		Model & No. of meas. & Probability of success (\%) & RMS error (m/s)\\
-		\hline
-		Linear & 1 & 79 & 0.15 \\
-		\hline
-		Linear & 2 & 82 & 0.12 \\
-		\hline
-		Polynomial & 1 & 61 & 0.14 \\
-		\hline
-		Polynomial & 2 & 76 & 0.12 \\
-		\hline
-		GPR & 1 & 47 & 0.15 \\
-		\hline
-		GPR & 2 & 51 & 0.15 \\
-		\hline
-	\end{tabular}
-\end{table}
-
-\begin{table} %SD
-	\centering
-	\caption{Estimator performance of all configurations for only SD trials} \label{table:sd}
-	\begin{tabular}{|c|c|c|c|}
-		\hline
-		Model & No. of meas. & Probability of success (\%) & RMS error (m/s)\\
-		\hline
-		Linear & 1 & 61 & 0.13 \\
-		\hline
-		Linear & 2 & 63 & 0.16 \\
-		\hline
-		Polynomial & 1 & 61 & 0.09 \\
-		\hline
-		Polynomial & 2 & 53 & 0.18 \\
-		\hline
-		GPR & 1 & 79 & 0.09 \\
-		\hline
-		GPR & 2 & 79 & 0.08 \\
-		\hline
-	\end{tabular}
-\end{table}
+Increasing the number of gait features considered resulted in a clear improvement in estimator performance. In contrast, increasing  model complexity did not yield significant improvements in estimator accuracy, but resulted in an increased number of parameters that require tuning. This tuning problem will get increasingly challenging as more gait features are considered. Therefore, the estimator models were chosen to be kept simple while increasing the number of gait features used in the estimator.
 
 \section{Summary}
 
-Including additional measurements at TD had a larger contribution toward increasing the estimator's probability of success than increasing the complexity of the measurement models. Neither of these two approaches had a conclusive effect on increasing the metric precision of the estimated desired velocity. Estimator configurations with GPR models outperformed other configurations for SD trials as GPs allow the estimate covariance to be predicted more accurately. These configurations exhibited a 16\% higher probability of success than the next best performing configuration. Therefore, it may be beneficial to retune the GPs to make them just as effective for SU trials. There may be additional gait features that may help improve estimator performance for SU trials, such as incorporating information from the lift-off gait event to help improve the estimates of intended velocity at MS.
+This chapter shows that the intent detection framework based on a Buttressed Kalman Filter is capable of predicting intent changes in exoskeleton users with and without iSCIs based on foot placement and leg swing currents. It can be inferred that the hip currents may be a better indicator of intent in individuals with iSCIs as their actions to modify their foot placement may not be completed due to the resistance from the exoskeleton. So we can argue that attempted foot placement is the primary mechanism of exhibiting intent change in individuals with iSCIs, but the human-robot interface causes this information to show up on hip current rather than kinematic data. This result motivated the consideration of measurements from multiple gait features at TD.
+
+Including additional measurements at TD had a larger contribution toward increasing the estimator's probability of success than increasing the complexity of the measurement models. Neither of these two approaches had a conclusive effect on increasing the metric precision of the estimated desired speed. The estimator had difficulty using gait features to speed changes under 0.15 m/s often leading to false predictions leading to deterioration in estimator accuracy. Thresholds based on a user's gait variability may be incorporated to reject these false predictions. As evidenced by the use of different gait features for the injured and uninjured subjects, gait feature relevance may be user-specific which motivates the personalization estimators to maintain estimation accuracy.
