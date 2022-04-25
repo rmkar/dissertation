@@ -113,6 +113,7 @@
 \LoadClass{book}
 \RequirePackage{ifthen,exscale,etoolbox,xpatch}
 \RequirePackage{ifpdf,ifluatex,ifxetex}
+\RequirePackage{url}
 \RequirePackage[
   plainpages=false,
   pdfpagelabels,
@@ -156,7 +157,6 @@
 \RequirePackage{float}
 \RequirePackage{booktabs}
 \RequirePackage{rotating}
-\RequirePackage{url}
 \RequirePackage[doublespacing]{setspace}[2000/12/01]
 \ifboolexpr{bool{pdf} or bool{xetex} or bool{luatex}}{%
   \ifluatex
