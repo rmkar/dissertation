@@ -47,9 +47,9 @@ where $ \greekvec{\kappa} $ is a vector containing regression coefficients and t
 
 \begin{figure}
 	\centering
-	\begin{overpic}[width=\linewidth,percent]{block_diagram}
-		\put(15.2,11){ \eqref{eq:sig_yy} - \eqref{eq:tdCovUp}}
-		\put(50,11){\eqref{eq:model} - \eqref{eq:P_up}}
+	\begin{overpic}[width=0.8\linewidth,percent]{block_diagram}
+		\put(13,11){ \eqref{eq:sig_yy} - \eqref{eq:tdCovUp}}
+		\put(48,11){\eqref{eq:model} - \eqref{eq:P_up}}
 	\end{overpic}
 %	\includegraphics[width=0.7\linewidth]{block_diagram.pdf}
 	\caption{Twice-per-step strategy to estimate user intent}\label{fig:block_diag}
@@ -189,7 +189,7 @@ The estimator uses simple dynamics that do not use knowledge of legged locomotio
 
 Two possible strategies were considered to increase estimator accuracy in detecting SU/SD changes and predicting the magnitude of the desired velocity. One strategy is to increase the number of gait features considered at touch down. The other is to replace the simple linear models with more complex models such as polynomial models or Gaussian Process Regression (GPR) models.
 
-In general, estimator configurations with two measurements showed improvements in performance over its counterpart with one measurement as evidenced from the probabilities of success listed in Tables~\ref{table:su} and \ref{table:sd}. There was no clear superior configuration as the estimator with the linear model and two measurements performed best for SD trials in terms of both, probability of success and RMS prediction error while the GPR model performed best for SU trials. For both SU and SD trials combined, the linear model with two measurements has a success rate of 72\% and an RMS error of 0.15 m/s whereas the GPR model has a success rate of 70\% with an RMS error of 0.12 m/s. It is important to note that these are aggregate results and while comparing individual trials, configurations with one measurement showed a higher probability of success and RMS prediction error for some trials. The estimator configurations shown in Table \ref{table:su} and \ref{table:sd} are detailed as follows.
+In general, estimator configurations with two measurements showed improvements in performance over its counterpart with one measurement as evidenced from the probabilities of success listed in Tables~\ref{table:su} and \ref{table:sd}. There was no clear superior configuration as the estimator with the linear model and two measurements performed best for SD trials in terms of both, probability of success and RMS prediction error while the GPR model performed best for SU trials. For both SU and SD trials combined, the linear model with two measurements has a success rate of 72\% and an RMS error of 0.15 m/s whereas the GPR model has a success rate of 70\% with an RMS error of 0.12 m/s. It is important to note that these are aggregate results and while comparing individual trials, configurations with one measurement showed a higher probability of success and RMS prediction error for some trials. The estimator configurations listed in Table \ref{table:su} and \ref{table:sd} are detailed as follows.
 
 \begin{table} %SU
 	\centering
