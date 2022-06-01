@@ -59,6 +59,7 @@ Template file for NDdiss2e class]
 % sort&compress (sorts and compresses numerical citations;
 %           is identical to sort when used with textrefs)
 
+\usepackage{hhline}
 \usepackage{amsmath}
 \usepackage{lipsum}
 \usepackage{amsfonts}
@@ -70,7 +71,12 @@ Template file for NDdiss2e class]
 \usepackage[abs]{overpic}
 \usepackage{pict2e}
 \usepackage{array}
-\usepackage{xcolor}
+\usepackage[table]{xcolor}
+\usepackage{makecell}
+\usepackage{tabularx,ragged2e}
+\usepackage{algorithm}
+\usepackage{algpseudocode}
+\usepackage{Resources/eqnHelper}
 %\usepackage[hidelinks]{hyperref}
 
 \usepackage{subcaption}
@@ -85,6 +91,9 @@ Template file for NDdiss2e class]
 			\hss}}}
 \makeatother
 
+\newcolumntype{C}{>{\Centering\arraybackslash}X}
+\newcommand{\prescolor}[1]{\cellcolor{green!#1!red}#1\%}
+\newcommand{\frescolor}[1]{\cellcolor{red!#1!green}#1\%}
 
 \definecolor{NDgold}{HTML}{ae9142}
 
