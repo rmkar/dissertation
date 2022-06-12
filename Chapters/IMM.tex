@@ -84,7 +84,7 @@ where $\x_{k+1}^* = \mathcal{P}(\x_k^*, \u_k^*)$, $\delta \x_k = \x_k - \x^*_k$,
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{subplot.eps}
+	\includegraphics[width=0.8\linewidth]{subplot.eps}
 	\vspace{-1em}
 	\caption{A subset of the CoM trajectories in the gait library after optimization.}\label{fig:library}
 \end{figure}
@@ -150,7 +150,7 @@ Similarly, a mixed covariance for the next iteration is computed through
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{likeCompare.pdf}
+	\includegraphics[width=0.75\linewidth]{likeCompare.pdf}
 	\caption{The effects of the inclusion of physical likelihood on phase likelihoods}\label{fig:likeCompare}
 \end{figure}
 
@@ -192,7 +192,7 @@ where continuous process noise variances for positions and velocities are report
 
 \begin{figure}
 	\centering
-	\includegraphics[width=.8\linewidth]{2StepSynth.pdf}
+	\includegraphics[width=.9\linewidth]{2StepSynth.pdf}
 	\caption{Model weights output by the IMM framework applied to measurements generated from a simulation of the B-SLIP model.}\label{fig:weightSyn}
 \end{figure}
 
@@ -209,7 +209,7 @@ This covariance mitigates sensitivity by increasing the estimator's reliance on 
 
 \begin{figure}
 	\centering
-	\includegraphics[width=.8\linewidth]{weightsExo.eps}
+	\includegraphics[width=.9\linewidth]{weightsExo.eps}
 	\caption{Model weights from the IMM framework applied to experimental measurements of an able-bodied individual walking in an exoskeleton.}\label{fig:exoWeights}
 \end{figure}
 
@@ -234,7 +234,7 @@ Inaccuracies in the likelihoods of some phases were observed around phase transi
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{trajDiff}
+	\includegraphics[width=0.9\linewidth]{trajDiff}
 	\caption{CoM trajectories for two steps of the same subject walking at steady-state with a self-selected gait speed using a walker vs. crutches.}\label{fig:trajDiff}
 \end{figure}
 Discrepancies were observed between the measured CoM trajectories and those of B-SLIP gaits. The measured CoM trajectories are asymmetric and it is difficult to generate high-fidelity matching B-SLIP gaits. Center of mass trajectories are influenced by a variety of factors such as the choice of ambulatory device, and gait features such as gait speed, and individual joint trajectories resulting from uncoordinated limb movements. Figure~\ref{fig:trajDiff} shows the CoM trajectories of the same subject over two steps walking at steady-state using a walker and crutches. The step length and therefore, step duration, were shorter when the walker was being used resulting in considerably different trajectories. This variation in trajectories is challenging to capture using only the B-SLIP model and simply increasing the number of gaits considered by the IMM is an insufficient solution.
