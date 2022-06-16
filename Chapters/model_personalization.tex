@@ -69,31 +69,38 @@ It is important to choose appropriate novel data to ensure that the gait feature
 Steady-state walking in trials of subjects with iSCIs had a standard deviation of up to 0.18 m/s for their walking speed compared to 0.1 m/s seen in healthy users walking without robot assistance \cite{socie2013gait}. In addition to the severity of the iSCI, variability may be affected by user fatigue, discomfort, or misfit orthoses. As a result, some walking trials may better represent the exoskeleton user's gait patterns than other trials performed on the same day. Therefore, choosing the appropriate training datasets from injured users is important to reduce noise in the data and accurately capture their gait patterns. As shown in Fig.~\ref{fig:heatmap}, the accuracy of the estimator in predicting gait speed changes differs based on the novel data used for customization, so these data must be chosen carefully. This choice may be increasingly difficult to make as the number of trials to consider increases. 
 
 One way to make this choice is to consider the Mutual Information (MI) between the measured variables (gait features) and those to be inferred (desired speed). MI is a measure of the information obtained about one random variable by observing another variable \cite{cover1999elements}. The MI between two variables may be computed using the Kullback-Leibler (KL) divergence, $ D_{KL} $, between their joint and marginal distributions. For example, consider two distributions $ A $ and $ B $ of an arbitrary variable $ x $, then the KL divergence $ D_{KL}(A||B) $ is a measure of how different the two distributions are, as illustrated in Fig.~\ref{fig:divergence}. The computation of KL divergence is simplified with the assumption that both distributions are Gaussian. The KL divergence between distributions $ A \sim \mathcal{N}\left(\mmu_a, \Ssigma_a\right) $ and $ B \sim \mathcal{N}\left(\mmu_b, \Ssigma_b\right) $ is given by
-\[
-D_{KL} (A||B) = \int_{x} a(x) \log \frac{a(x)}{b(x)}
-\]
+
+\begin{equation}
+	D_{KL} (A||B) = \int_{x} A \log \frac{A}{B} \label{eq:kl_def}
+\end{equation}
+
 with the probability density function given by
 %
 \[
 	p(\x) = \frac{1}{(2\pi)^{k/2} |\Ssigma|^{1/2}} \exp\left(-\frac{1}{2} (\x-\mmu)^T \Ssigma^{-1} (\x-\mmu)\right)
 \]
 %
-using the definition of the expected value of a random variable
-\begin{equation}
-	D_{KL}(A||B) = \mathbb{E}_a \left[\log(a(x)) - log(b(x))\right] \label{eq:dkl_exp}
-\end{equation}
+The expected value of a random variable $ X $ is defined as \[\mathbb{E}[X] = \int_{-\infty}^{\infty} x f(x) dx\] therefore, using \eqref{eq:kl_def}, KL divergence may be defined as
+\begin{eqnarray}
+	D_{KL}(A||B) &=&  \mathbb{E}_A \left[\log \frac{A}{B}\right] \nonumber \\
+	{} &=& \mathbb{E}_A \left[\log(A) - \log(B)\right] \label{eq:dkl_exp}
+\end{eqnarray}
 %
-Substituting the probability density functions of $ A $ and $ B $ into \eqref{eq:dkl_exp} \cite{duchi2007derivations}, the computation of $ D_{KL}(A||B) $ simplifies to
+Substituting the probability density functions of $ A $ and $ B $ into \eqref{eq:dkl_exp}, the computation of $ D_{KL}(A||B) $ is simplified \cite{duchi2007derivations} to
 %
 \begin{equation}
 	D_{KL}(A||B) = \frac{1}{2} \left[\log \frac{|\Ssigma_b|}{|\Ssigma_a|} - k + (\mmu_a - \mmu_b)^T \Ssigma_b^{-1} (\mmu_a - \mmu_b) + tr\{\Ssigma_b^{-1} \Ssigma_a\} \right] \label{eq:dkl}
 \end{equation}
 %
-The mutual information between the two variables $ X $ and $ Y $ is  \[I(X;Y) = D_{KL}(p_{(x,y)}||p_x p_y)\]  where $ p_{(x,y)} $ is their joint probability and $ p_x $ and $ p_y $ are their marginal probabilities. As $ p_{(x,y)} $ and $ p_x p_y $ have the same dimension, mean, and diagonal of the covariance matrix, the computation of $ I(X;Y) $ using \eqref{eq:dkl} further simplifies down to \[I(X;Y) =\frac{1}{2} \left[\log \frac{|\Ssigma_{xy}^{'}|}{|\Ssigma_{xy}|} \right] \] where $ \Ssigma_{xy}^{'} $ is a diagonal matrix with the same diagonal as $ \Ssigma_{xy} $. Roughly, the MI provides a scalar measure of the correlation between the two variables.
+The mutual information between the two variables $ X $ and $ Y $ is  \[I(X;Y) = D_{KL}(p_{(X,Y)}||p_X p_Y)\]  where $ p_{(X,Y)} $ is their joint probability and $ p_X $ and $ p_Y $ are their marginal probabilities. As $ p_{(X,Y)} $ and $ p_X p_Y $ have the same dimension, mean, and diagonal of the covariance matrix, the computation of $ I(X;Y) $ using \eqref{eq:dkl} further simplifies down to
+\begin{equation}
+	I(X;Y) =\frac{1}{2} \left[\log \frac{|\Ssigma_{xy}^{'}|}{|\Ssigma_{xy}|} \right] \label{eq:MI}
+\end{equation}
+where $ \Ssigma_{xy}^{'} $ is a diagonal matrix with the same diagonal as $ \Ssigma_{xy} $. Roughly, the MI provides a scalar measure of the correlation between the two variables.
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.55\linewidth]{divergence.pdf}
+	\includegraphics[width=0.6\linewidth]{divergence.pdf}
 	\caption{The difference between two distributions may be quantified using KL divergence.}\label{fig:divergence}
 \end{figure}	
 
@@ -128,7 +135,7 @@ To avoid training the estimator on all available speed change data and leave som
 			\Ssigma_{v' \q} & \Sigma_{v'v'}
 		\end{bmatrix}\right) $
 		\vskip 2pt
-		\State $ \iota_m = I(V;Q) $
+		\State $ \iota_m = I(V;Q) $ using \eqref{eq:MI}
 		\EndFor
 		\State \Return $m$ such that $\iota_m$ = $ \max(\greekvec{\iota}) $ 
 	\end{algorithmic}
