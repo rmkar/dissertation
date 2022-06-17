@@ -68,12 +68,20 @@ It is important to choose appropriate novel data to ensure that the gait feature
 
 Steady-state walking in trials of subjects with iSCIs had a standard deviation of up to 0.18 m/s for their walking speed compared to 0.1 m/s seen in healthy users walking without robot assistance \cite{socie2013gait}. In addition to the severity of the iSCI, variability may be affected by user fatigue, discomfort, or misfit orthoses. As a result, some walking trials may better represent the exoskeleton user's gait patterns than other trials performed on the same day. Therefore, choosing the appropriate training datasets from injured users is important to reduce noise in the data and accurately capture their gait patterns. As shown in Fig.~\ref{fig:heatmap}, the accuracy of the estimator in predicting gait speed changes differs based on the novel data used for customization, so these data must be chosen carefully. This choice may be increasingly difficult to make as the number of trials to consider increases. 
 
-One way to make this choice is to consider the Mutual Information (MI) between the measured variables (gait features) and those to be inferred (desired speed). MI is a measure of the information obtained about one random variable by observing another variable \cite{cover1999elements}. The MI between two variables may be computed using the Kullback-Leibler (KL) divergence, $ D_{KL} $, between their joint and marginal distributions. For example, consider two distributions $ A $ and $ B $ of an arbitrary variable $ x $, then the KL divergence $ D_{KL}(A||B) $ is a measure of how different the two distributions are, as illustrated in Fig.~\ref{fig:divergence}. The computation of KL divergence is simplified with the assumption that both distributions are Gaussian. The KL divergence between distributions $ A \sim \mathcal{N}\left(\mmu_a, \Ssigma_a\right) $ and $ B \sim \mathcal{N}\left(\mmu_b, \Ssigma_b\right) $ is given by
+One way to make this choice is to consider the Mutual Information (MI) between the measured variables (gait features) and those to be inferred (desired speed). MI is a measure of the information obtained about one random variable by observing another variable \cite{cover1999elements}. The MI between two variables may be computed using the Kullback-Leibler (KL) divergence, $ D_{KL} $, between their joint and marginal distributions. For example, consider two distributions $ A $ and $ B $ of an arbitrary variable $ x $, then the KL divergence $ D_{KL}(A||B) $ is a measure of how different the two distributions are, as illustrated in Fig.~\ref{fig:divergence}. 
+%
+\begin{figure}
+	\centering
+	\includegraphics[width=0.6\linewidth]{divergence.pdf}
+	\caption{The difference between two distributions may be quantified using KL divergence.}\label{fig:divergence}
+\end{figure}
+
+The computation of KL divergence is simplified with the assumption that both distributions are Gaussian. The KL divergence between distributions $ A \sim \mathcal{N}\left(\mmu_a, \Ssigma_a\right) $ and $ B \sim \mathcal{N}\left(\mmu_b, \Ssigma_b\right) $ is given by
 
 \begin{equation}
 	D_{KL} (A||B) = \int_{x} A \log \frac{A}{B} \label{eq:kl_def}
 \end{equation}
-
+%
 with the probability density function given by
 %
 \[
@@ -96,13 +104,7 @@ The mutual information between the two variables $ X $ and $ Y $ is  \[I(X;Y) = 
 \begin{equation}
 	I(X;Y) =\frac{1}{2} \left[\log \frac{|\Ssigma_{xy}^{'}|}{|\Ssigma_{xy}|} \right] \label{eq:MI}
 \end{equation}
-where $ \Ssigma_{xy}^{'} $ is a diagonal matrix with the same diagonal as $ \Ssigma_{xy} $. Roughly, the MI provides a scalar measure of the correlation between the two variables.
-
-\begin{figure}
-	\centering
-	\includegraphics[width=0.6\linewidth]{divergence.pdf}
-	\caption{The difference between two distributions may be quantified using KL divergence.}\label{fig:divergence}
-\end{figure}	
+where $ \Ssigma_{xy}^{'} $ is a diagonal matrix with the same diagonal as $ \Ssigma_{xy} $. Roughly, the MI provides a scalar measure of the correlation between the two variables.	
 
 MI was used to measure the utility of the measured gait features for estimating the desired gait speed. Since the true desired gait speed is difficult to determine, the speed at the next step, denoted $ v' $, was assumed as its proxy \cite{karulkar2021using}. The distributions of gait speed and features were approximated as Gaussian and the MI $ I(V ; Q) $ was computed, where $ V $ is the distribution of the step-to-step changes in desired speed estimated via $ \Delta v' $, and $ Q $ is the distribution of the corresponding changes in gait feature measurements $ \Delta \Q $. The intuition behind using distributions of the changes in gait speed and features is to incorporate the knowledge of their evolution through intent changes into the selection process. 
 
