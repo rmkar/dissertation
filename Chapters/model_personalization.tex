@@ -272,11 +272,9 @@ The overall success rate for this trial, with 17 significant speed changes, was 
 	\end{tabular}
 \end{table}
 
-These results were compared to estimator trials with IU-1 in which the base data and novel data were both from walking trials with crutches. In this case, the success rate and RMS error were 75\% and 1.52 m/s respectively. Surprisingly, this overall success rate was lower and the RMS error was higher than when the base data was from trials with a walker as in the previous paragraph. Further analysis revealed that the task of gait speed estimation was particularly difficult for IU-1 with crutches since  32 of the 38 steps were below the MDC threshold of 0.17 m/s found in literature. In both of the previous cases, the novel data was the same, only the base data was changed. However, pairing the novel data with walker and crutch base data results in MI values of 0.4048 and 0.3007 respectively, so gait features are more informative of gait speed when uninjured users use a walker. As a result, the model generated using base data from walker trials was able to handle the increased estimation difficulty and increase the estimator accuracy and lower RMS error. This result highlights the flexibility of the estimator to incorporate the most informative base data, even under potentially mismatched conditions.
+These results were compared to estimator trials with IU-1 in which the base data and novel data were both from walking trials with crutches. In this case, the success rate and RMS error were 75\% and 1.52 m/s respectively. Surprisingly, this overall success rate was similar and the RMS error was higher than when the base data was from trials with a walker as in the previous paragraph. Further analysis revealed that the task of gait speed estimation was particularly difficult for IU-1 with crutches since  32 of the 38 steps were below the MDC threshold of 0.17 m/s found in literature. In both of the previous cases, the novel data was the same, only the base data was changed. However, pairing the novel data with walker and crutch base data results in MI values of 0.4048 and 0.3007 respectively, so gait features are more informative of gait speed when uninjured users use a walker. As a result, the model generated using base data from walker trials was able to handle the increased estimation difficulty and increase the estimator accuracy and lower RMS error. This result highlights the flexibility of the estimator to incorporate the most informative base data, even under potentially mismatched conditions.
 
-However, this interchangeability did not hold for every pairing. Estimation was performed for IU-1 with novel data from walking trials with a walker and base data from trials with crutches. Compared to estimation using base data from trials with a walker, the percentage of success dropped to 63\% with an RMS error of 0.12 m/s, and the confusion matrix for this trial is given in Table~\ref{table:confmat_w_c}. There was a less severe deterioration in performance for IU-2. The success rate and RMS error were 38\% and 0.26 m/s respectively when compared to the performance of the same novel data paired with data of trials with a walker (see Section \ref{subsec:ww}). In general, estimators had higher percentages of success across all tests when using base data of walker trials. This may be as the crutches offer more freedom to move during use than a walker, resulting in more individualized effects on gait patterns across trials. Again, the lower correlation between gait speed and features is evidenced by the MI in the untransformed walker base data (0.3675) being higher than the  crutch base data (0.2813), so gait features are more informative of gait speed when uninjured users use a walker. 
-
-The use of crutches also introduces unmeasured states such as individual crutch placement which may be informative of the user's intent. These inconsistencies may be overcome by adding additional instrumentation such as IMUs \cite{brescianini2011ins} to crutches to capture their role in gait dynamics and additional information about user intent. These results further suggest that choosing subsets of the base data along with novel data (e.g., using extensions of Algo.~\ref{algo:selection}) may allow further improvement in estimator performance.
+However, this interchangeability did not hold for every pairing. Estimation was performed for IU-1 with novel data from walking trials with a walker and base data from trials with crutches. Compared to estimation using base data from trials with a walker, the percentage of success dropped to 63\% with an RMS error of 0.12 m/s, and the confusion matrix for this trial is given in Table~\ref{table:confmat_w_c}. The deterioration in performance for IU-2 was less severe. The success rate and RMS error were 38\% and 0.26 m/s respectively when compared to the performance of the same novel data paired with data of trials with a walker (see Section \ref{subsec:ww}). In general, estimators had higher percentages of success across all tests when using base data of walker trials. This may be as crutches offer more freedom to move during use than a walker, resulting in more individualized effects on gait patterns across trials. Again, the lower correlation between gait speed and features is evidenced by the MI in the untransformed walker base data (0.3675) being higher than the  crutch base data (0.2813), so gait features are more informative of gait speed when uninjured users use a walker. 
 
 \begin{table}
 	\centering
@@ -293,7 +291,42 @@ The use of crutches also introduces unmeasured states such as individual crutch 
 		%			\hline 
 	\end{tabular}
 \end{table}
-Overall, pooling base and novel data improved estimator accuracy in every case except for trials of IU-2 using a walker. This loss of accuracy was due to noisy measurements during those particular trials. The traces when using novel walker and crutch data were 3.425 and 2.015 respectively (for the same base data). Preliminary work shows that this noise in the IU-2 walker data can be attributed to certain noisy features for this user. Multiple gait features often provide the same information about gait speed while introducing unique noise. In such cases, using a reduced, minimally-redundant set of gait features offers the potential to further improve accuracy. Preliminary results addressing this aspect show increases of over 20\% in overall estimation accuracy of the IU-2 trials shown in Tables~\ref{table:confmat_w_w}~and~\ref{table:confmat_w_c}.
+
+The use of crutches also introduces unmeasured states such as individual crutch placement which may be informative of the user's intent. These inconsistencies may be overcome by adding instrumentation such as IMUs \cite{brescianini2011ins} to crutches to capture their role in gait dynamics and additional information about user intent. Additionally, upon expanding the base dataset to include both crutch and walker trials estimator performance either stayed the same or deteriorated. These results further suggest that choosing subsets of the base data along with novel data (e.g., using extensions of Algo.~\ref{algo:selection}) may allow further improvement in estimator performance. This deterioration is seen when comparing the estimator performance in Tables~\ref{table:confmat_w_w}~and~\ref{table:confmat_w_wc} where the overall accuracy dropped from 80\% to 61\% and the RMS error increased from 0.14 m/s to 0.19 m/s. In the case of IU-2, comparing Tables~\ref{table:confmat_c_c}~and~\ref{table:confmat_c_wc}, the estimator performance is similar with accuracies of 81\% each and RMS errors of 0.17 m/s and 0.16 m/s respectively. These results further suggest that instead of using all available base data, choosing subsets of the base data that best pool with novel data (e.g., using extensions of Algo.~\ref{algo:selection}) may allow further improvement in estimator performance.
+
+\begin{table}
+	\centering
+	\caption{Confusion matrix for \\Novel Data - Walker/Base Data - Walker \& Crutches}\label{table:confmat_w_wc}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hhline{-----}
+		& \multicolumn{2}{c|}{Predicted SD} & \multicolumn{2}{c|}{Predicted SU} \\ 
+		\hhline{~----}
+		& IU-1 & IU-2 & IU-1 & IU-2 \\
+		\hhline{-----}
+		Actual SD	& \prescolor{60} & \prescolor{43} & \frescolor{33} & \frescolor{67} \\ 
+		\hline
+		Actual SU	&  \frescolor{40} & \frescolor{57} & \prescolor{67}& \prescolor{33} \\ \hhline{-----}
+		%			\hline 
+	\end{tabular}
+\end{table}
+
+\begin{table}
+	\centering
+	\caption{Confusion matrix for \\Novel Data - Crutches/Base Data - Walker \& Crutches}\label{table:confmat_c_wc}
+	\begin{tabular}{|c|c|c|c|c|}
+		\hhline{-----}
+		& \multicolumn{2}{c|}{Predicted SD} & \multicolumn{2}{c|}{Predicted SU} \\ 
+		\hhline{~----}
+		& IU-1 & IU-2 & IU-1 & IU-2 \\
+		\hhline{-----}
+		Actual SD	& \prescolor{100} & \prescolor{91} & \frescolor{50} & \frescolor{24} \\ 
+		\hline
+		Actual SU	&  \frescolor{0} & \frescolor{9} & \prescolor{50}& \prescolor{76} \\ \hhline{-----}
+		%			\hline 
+	\end{tabular}
+\end{table}
+
+Overall, pooling base and novel data improved estimator accuracy in every case except for trials of IU-2 using a walker. This loss of accuracy was due to noisy measurements during those particular trials. The differences in measurement noise is evidenced by the traces of the covariance matrices when using novel walker and crutch data which were 3.425 and 2.015 respectively (for the same base data). Preliminary work shows that this noise in the IU-2 walker data can be attributed to certain noisy features for this user. Multiple gait features often provide the same information about gait speed while introducing unique noise. In such cases, using a reduced, minimally-redundant set of gait features offers the potential to further improve accuracy. Preliminary results addressing this aspect show increases of over 20\% in overall estimation accuracy of the IU-2 trials shown in Tables~\ref{table:confmat_w_w}~and~\ref{table:confmat_w_c}.
 
 \subsection{Limitations}
 
