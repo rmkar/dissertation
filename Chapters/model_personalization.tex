@@ -104,7 +104,7 @@ The mutual information between the two variables $ X $ and $ Y $ is  \[I(X;Y) = 
 \begin{equation}
 	I(X;Y) =\frac{1}{2} \left[\log \frac{|\Ssigma_{xy}^{'}|}{|\Ssigma_{xy}|} \right] \label{eq:MI}
 \end{equation}
-where $ \Ssigma_{xy}^{'} $ is a diagonal matrix with the same diagonal as $ \Ssigma_{xy} $. Roughly, the MI provides a scalar measure of the correlation between the two variables.	
+where $ \Ssigma_{xy} = E[(X - \greekvec{\mu}_x)(Y - \greekvec{\mu}_y)^T] $ and $ \Ssigma_{xy}^{'} $ is a block diagonal matrix with the cross-covariance between $ X $ and $ Y $ in $ \Ssigma_{xy} $ set to zero. Roughly, the MI provides a scalar measure of the correlation between the two variables.	
 
 MI was used to measure the utility of the measured gait features for estimating the desired gait speed. Since the true desired gait speed is difficult to determine, the speed at the next step, denoted $ v' $, was assumed as its proxy \cite{karulkar2021using}. The distributions of gait speed and features were approximated as Gaussian and the MI $ I(V ; Q) $ was computed, where $ V $ is the distribution of the step-to-step changes in desired speed estimated via $ \Delta v' $, and $ Q $ is the distribution of the corresponding changes in gait feature measurements $ \Delta \Q $. The intuition behind using distributions of the changes in gait speed and features is to incorporate the knowledge of their evolution through intent changes into the selection process. 
 
