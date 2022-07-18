@@ -1,5 +1,12 @@
 \chapter{Model-based Approach to Estimate Gait Characteristics} \label{chapter:IMM}
-Accurate state estimation is a foundational component for user intent estimation in HRI as it would deliver increased insight into user actions. This chapter describes and estimation framework that employs a library of gaits generated from a template model to sensor measurements from an exoskeleton. The library contains walking gaits with speeds up to 1 m/s, and is built using a predictor-corrector type gait search algorithm to address the low dynamic stability of the model at low speeds. The library gaits are then compared to measurements from the exoskeleton using Interacting Multi-Model (IMM) to fuse estimates from multiple parallel EKFs (Chapter~\ref{chapter:bg_info}). While IMMs have been used for intent estimation \cite{chaandar2015human}, their application to legged locomotion has been minimal. The framework is able to estimate the \com~ state as the user transitions through different gait phases.
+Accurate state estimation is a foundational component for user intent estimation in HRI as it would deliver increased insight into user actions. This chapter describes and estimation framework (Fig.~\ref{fig:IMM_overview}) that employs a library of gaits generated from a template model to sensor measurements from an exoskeleton. The library contains walking gaits with speeds up to 1 m/s, and is built using a predictor-corrector type gait search algorithm to address the low dynamic stability of the model at low speeds. The library gaits are then compared to measurements from the exoskeleton using Interacting Multi-Model (IMM) to fuse estimates from multiple parallel EKFs (Chapter~\ref{chapter:bg_info}). While IMMs have been used for intent estimation \cite{chaandar2015human}, their application to legged locomotion has been minimal. The framework is able to estimate the \com~ state as the user transitions through different gait phases.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.8\linewidth]{IMM_overview.pdf}
+	\caption{Overview of the estimation setup}\label{fig:IMM_overview}
+	\vspace{-1em}
+\end{figure}
 
 The target population of this work is individuals with iSCIs, so the gait velocities of interest are very small in magnitude ($ \sim $ 0.5 m/s) \cite{nymark2005electromyographic}. There is limited work that uses physics-based models as a fundamental component in intent detection. The main attraction of using physics-based models is to allow for the accommodation of a greater number of users by modifying a small set of parameters such as mass, leg length, angles, and stiffness. The work described in this chapter uses the 3D B-SLIP model \cite{liu2015dynamic} as the basis of an estimation framework.
 
@@ -7,14 +14,7 @@ There are often physical changes to the gait as a result of changes in intended 
 
 While the work described herein considers forward speed as the user's expression of intent, it is not the only modality of intent expression. Other aspects of intent not considered herein are the user's desires to initiate/terminate gait, change heading, and change gait mode i.e., transitions from walking on flat ground to ramps or stairs. In theory, the presented IMM estimation framework may be extended to all these scenarios, with appropriate models of locomotion e.g., the B-SLIP can describe steady-state gaits, but not gait initiation/termination. Considering multiple aspects of intent change for estimation at once may present difficulties as they may influence the gait differently and complicate the estimation problem via crosstalk. Considering only the gait speed as a starting point helps break the estimation problem into a smaller subsection and reduces the challenges faced during estimation.
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.8\linewidth]{IMM_overview.pdf}
-	\caption{Overview of the estimation setup}
-	\vspace{-1em}
-\end{figure}
-
-The challenges faced during estimation were the increased difficulty in finding low-speed periodic gaits during gait library generation and handling the hybrid dynamics of legged locomotion used to describe the different gait phases. The work done to address these challenges is described in this chapter. The gait optimisation setup used to find periodic B-SLIP gaits is described in Section~\ref{sec:gait_opt}. A linearization-based seed search method was developed to search for gaits at low walking speeds (less than 0.8 m/s) and generate a gait library as described in Section~\ref{sec:gait_lib}. Additionally, IMM estimation was used to handle hybrid dynamics along with the library gaits as detailed in Section~\ref{sec:IMM}. This chapter describes the results reported in a previous conference publication \cite{karulkarapplication}.
+The challenges faced during estimation were the increased difficulty in finding low-speed periodic gaits during gait library generation and handling the hybrid dynamics of legged locomotion used to describe the different gait phases. The work done to address these challenges is described in this chapter. The gait optimization setup used to find periodic B-SLIP gaits is described in Section~\ref{sec:gait_opt}. A linearization-based seed search method was developed to search for gaits at low walking speeds (less than 0.8 m/s) and generate a gait library as described in Section~\ref{sec:gait_lib}. Additionally, IMM estimation was used to handle hybrid dynamics along with the library gaits as detailed in Section~\ref{sec:IMM}. This chapter describes the results reported in a previous conference publication \cite{karulkarapplication}.
 
 \section{Generating the gait library using the B-SLIP model} \label{sec:gait_opt}
 
