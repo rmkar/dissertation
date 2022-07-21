@@ -447,7 +447,7 @@
   \titlepage
   \null
   \begin{center}
-  \vspace*{28pt}
+%  \vspace*{28pt}
 %  \vspace*{36pt}
   {\normalsize\mdseries \normalspacing
      \MakeTextUppercase{\@title} \\[3.5ex]
