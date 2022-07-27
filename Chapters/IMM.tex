@@ -203,7 +203,7 @@ The IMM framework was first evaluated on synthetic data from simulated B-SLIP ga
 
 \subsection{Testing with B-SLIP Simulation Data}\label{sec:IMM_syn}
 
-The B-SLIP gait used to generate synthetic measurements was from the library with a forward velocity $ \dot{x}_\com $ = 0.7 m/s. Measurements of the 3D position, forward, and vertical velocity of the CoM in the sagittal plane were used such that $ \y = [x_{\com},\ y_{\com},\ z_{\com},\ \dot{x}_{\com},\ \dot{z}_{\com}]^T $. Zero-mean Gaussian noise with constant covariance $ \R $ was added to the simulated measurements. Process noise was not added to the simulation. However, the process noise covariance $ \Q $ was retained as an estimation parameter as inaccuracies in the dynamics exist when an inaccurate gait/phase is used during estimation. The covariance values used are given by
+The B-SLIP gait used to generate synthetic measurements was from the library with a forward velocity $ \dot{x}_c $ = 0.7 m/s. Measurements of the 3D position, forward, and vertical velocity of the CoM in the sagittal plane were used such that $ \y = [x_{c},\ y_{c},\ z_{c},\ \dot{x}_{c},\ \dot{z}_{c}]^T $. Zero-mean Gaussian noise with constant covariance $ \R $ was added to the simulated measurements. Process noise was not added to the simulation. However, the process noise covariance $ \Q $ was retained as an estimation parameter as inaccuracies in the dynamics exist when an inaccurate gait/phase is used during estimation. The covariance values used are given by
 \begin{align}
 	\R &= {\rm diag}([5 ,5 ,5  ,50 ,50]) 
 \times 10^{-5} \\

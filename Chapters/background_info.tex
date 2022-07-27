@@ -24,7 +24,7 @@ The SLIP model can be used to describe human running, however, it is inadequate 
 	\caption{Oscillations during the double-support (shaded green) of 2D B-SLIP gaits at low velocity} \label{fig:traj_compare}
 \end{figure}
 
-In their basic forms, the IP, SLIP, and B-SLIP models all ignore lateral dynamics, however, lateral dynamics become more dominant for low-speed gaits. For example, according to the human walking data presented by Fukuchi et al.~\cite{fukuchi2018public}, the peak-to-peak amplitude of the lateral sway of the CoM is approximately 3 cm while walking at 1.27 m/s but it rises to 9 cm while walking at 0.44 m/s. The model presented by Geyer is defined in only two dimensions, but it generalizes to 3D~\cite{liu2015dynamic}. This 3D model allows the lateral sway to be taken into consideration and oscillations during double support are eliminated. With appropriate leg length and step width, the sway seen in the gaits generated using the 3D B-SLIP model is comparable to human data. Considering the lateral sway is especially important while studying walking at low speeds. 
+In their basic forms, the IP, SLIP, and B-SLIP models all ignore lateral dynamics, however, lateral dynamics become more dominant for low-speed gaits. For example, according to the human walking data presented by Fukuchi et al.~\cite{fukuchi2018public}, the peak-to-peak amplitude of the lateral sway of the CoM is approximately 3 cm while walking at 1.27 m/s but it rises to 9 cm while walking at 0.44 m/s. The model presented by Geyer is defined in only two dimensions, but it generalizes to 3D~\cite{liu2015dynamic,liu2016terrain}. This 3D model allows the lateral sway to be taken into consideration and oscillations during double support are eliminated. With appropriate leg length and step width, the sway seen in the gaits generated using the 3D B-SLIP model is comparable to human data. Considering the lateral sway is especially important while studying walking at low speeds. 
 
 \subsection{Actuated Models}
 
@@ -33,7 +33,7 @@ Another approach to gait modeling is including a control input to achieve the de
 Actuated models provide a more flexible framework to estimate gait, but determining the control parameters when applying those models to humans becomes a challenge. Therefore, active models are more suited to prosthetic devices which are used in series with the user or legged robots. Most active models have been proposed in regards to legged robots where the dynamics of the robot are well known to the designers. This allows for the complexity of the model to be matched to the complexity of the system dynamics. In the case of exoskeletons, the dynamics of the human body and a human's internal control system \cite{wolpert1998internal, dounskaia2005internal, kording2007decision} are still a subject of study and they are further complicated by the parallel operation with the exoskeleton suit due to coupling in the human and robot. The simplicity of passive models and the lack of a need to make assumptions about the inputs from a user working in parallel makes them more suited for parallel robots such as exoskeletons. As a result, passive models may be better suited for use in intent detection frameworks. 
 
 \section{The B-SLIP model}\label{sec:bslip_model}
-The work presented herein is focused on individuals recovering from iSCIs whose walking velocities were as low as 0.5 m/s. A majority of the duration of steps at low velocities is spent in double support, and it is important to use a model that can describe this gait phase. Therefore, this work considers a passive model, the 3D B-SLIP model, to model human locomotion shown in Fig~\ref{fig:slip}. In this model, the \COM~is loaded onto two massless spring legs of length $ l_o $ and stiffness $ k $. The state vector $ \x_{\COM} $ contains the position and velocity of the point mass $ m $ relative to the stance foot such that $ \x_{\COM} = [x_{\COM} ,y_{\COM} ,z_{\COM} ,\dot{x}_{\COM} ,\dot{y}_{\COM} ,\dot{z}_{\COM}]^T $. The position of the leading leg at touchdown is given by two angles, the angle between the leading leg and vertical $ \theta $ and the angle $ \varphi $ between the forward axis $ x $  and the ground projection of the leading leg.
+The work presented herein is focused on individuals recovering from iSCIs whose walking velocities were as low as 0.5 m/s. A majority of the duration of steps at low velocities is spent in double support, and it is important to use a model that can describe this gait phase. Therefore, this work considers a passive model, the 3D B-SLIP model, to model human locomotion shown in Fig~\ref{fig:slip}. In this model, the \COM~is loaded onto two massless spring legs of length $ l_o $ and stiffness $ k $. The state vector $ \x_{c} $ contains the position and velocity of the CoM, modeled by the point mass $ m $, relative to the stance foot such that $ \x_{c} = [x_{c} ,y_{c} ,z_{c} ,\dot{x}_{c} ,\dot{y}_{c} ,\dot{z}_{c}]^T $. The position of the leading leg at touchdown is given by two angles, the angle between the leading leg and vertical $ \theta $ and the angle $ \varphi $ between the forward axis $ x $  and the ground projection of the leading leg.
 %
 \begin{figure}
 	\centering
@@ -53,44 +53,81 @@ A gait of the B-SLIP model, as viewed in the sagittal plane \footnote{The sagitt
 \subsection{Hybrid dynamics of the B-SLIP model}
 The dynamics of the model in single support are described by
 \begin{equation}
-	m\ddot{\p}_{\COM} = k(l_0 - \lVert \mathbf{l}_i \rVert)\hat{\mathbf{l}}_i + m \mathbf{g}
+	m\ddot{\p}_{c} = k(l_0 - \lVert \mathbf{l}_i \rVert)\hat{\mathbf{l}}_i + m \mathbf{g}
 \end{equation}
 \noindent where $ i = \{A,B\} $ denotes the supporting leg, $ \mathbf{l}_i \in \mathbb{R}^3 $ is the vector along the leg from the mass to the position of the stance foot $\p_i$ , $ \hat{\mathbf{l}}_i \in \mathbb{R}^3$ is a unit vector along the leg, and $ \mathbf{g} \in \mathbb{R}^3 $ is the gravity vector. The dynamics during double support are given by
 \begin{equation}
-	m\ddot{\p}_{\COM} = k(l_0 - \lVert \mathbf{l}_A \rVert)\hat{\mathbf{l}}_A + k(l_0 - \lVert \mathbf{l}_B \rVert)\hat{\mathbf{l}}_B + m \mathbf{g}
+	m\ddot{\p}_{c} = k(l_0 - \lVert \mathbf{l}_A \rVert)\hat{\mathbf{l}}_A + k(l_0 - \lVert \mathbf{l}_B \rVert)\hat{\mathbf{l}}_B + m \mathbf{g}
 \end{equation}
 %
 \noindent Certain conditions, known as guards, must be met to enable the switching of the dynamics from one phase to another. There are three switching surfaces to enable phase switches at TD, LO, and MS. These sets are as follows
 %
 \begin{eqnarray}
-	\mathcal{G}_{TD} &=& \{(\p,\v)| v_z < 0 ,z_{\COM} < z_{T}\} \label{eq:gtd} \\
-	\mathcal{G}_{LO} &=& \{(\p,\v)| v_z > 0 ,\lVert \mathbf{l}_A \rVert > l_0\} \label{eq:glo} \\
-	\mathcal{G}_{MS} &=& \{(\p,\v)| v_z = 0 ,z_{\COM} > z_{T} ,\lVert \mathbf{l}_A \rVert < l_0\} \label{eq:gms} 
+	\mathcal{G}_{TD} &=& \{(\p_c,\v_c)| \dot{z}_c < 0 ,z_{c} = z_{T}\} \label{eq:gtd} \\
+	\mathcal{G}_{LO} &=& \{(\p_c,\v_c)| \dot{z}_c > 0 ,\lVert \mathbf{l}_A \rVert = l_0\} \label{eq:glo} \\
+	\mathcal{G}_{MS} &=& \{(\p_c,\v_c)| \dot{z}_c = 0 ,z_{c} > z_{T} ,\lVert \mathbf{l}_A \rVert < l_0\} \label{eq:gms} 
 \end{eqnarray} 
 %
-\noindent where $ z_{T} = l_0 \cos \theta $ is the threshold height for touchdown. Satisfaction of these guard conditions triggers gait phase switches and the states of the model are transferred across the switching events using functions called reset maps. There are three reset maps for the \com~ state $ \x_{\COM} $ B-SLIP model following the general form $ \x^+ = \mathcal{R(\x^-)} $, where the $ + $ and $ - $ denote pre- and post-switch states and the subscript has been omitted for brevity. The first map is applied at TD when the guard \eqref{eq:gtd} is satisfied. There are no impacts at touchdown as spring legs of the B-SLIP model are assumed to be massless so the state remains unchanged as follows 
-\begin{gather}
-	\mathcal{R}_{TD}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
-	\mathcal{R}_{TD}(\x^-) = \x^- 
-\end{gather}
+\noindent where $ z_{T} = l_0 \cos \theta $ is the threshold height for touchdown. Satisfaction of these guard conditions triggers gait phase switches and the states of the model are transferred across the switching events using functions called reset maps. For clarity of notation, let $ \z \in \mathbb{R}^{12} $ be the extended state that contains the CoM state and the positions of the feet such that
+\[
+	\z = \begin{bmatrix}
+			\x_{c} \\
+			\p_{A} \\
+			\p_{B}
+	\end{bmatrix}
+\]
+There are three reset maps following the general form $ \z^+ = h(\z^-,\u) $, where the $ + $ and $ - $ denote pre- and post-switch states. The first map is applied at TD when the guard \eqref{eq:gtd} is satisfied. There are no impacts at touchdown as spring legs of the B-SLIP model are assumed to be massless so the CoM state remains unchanged, and the position of the leading foot is updated as follows 
+%\begin{gather}
+%	\mathcal{R}_{TD}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
+%	\mathcal{R}_{TD}(\x^-) = \x^- 
+%\end{gather}
+\begin{eqnarray}
+	\z^+ &=& h_{TD}(\z^-,\u) \qquad h_{TD}:\mathbb{R}^{12}\times \mathbb{R}^{3 \rightarrow } \mathbb{R}^{12} \\
+	{}	&=& \begin{bmatrix}
+		\x_{c}^- \\
+		\p_{A}^- \\
+		h_{TD}^{B}(\p_{c}^-, \u)
+	\end{bmatrix} \nonumber
+\end{eqnarray}
+where
+\begin{equation}
+	h_{TD}^{B}(\p_{c}^-, \u) = \p_{c}^- + l_0%
+	\begin{bmatrix}
+		\sin(\theta)\cos(\phi)\\
+		\sin(\theta)\sin(\phi)\\
+		-\cos(\phi)
+	\end{bmatrix}
+\end{equation}
 Were the feet assumed to have mass, this reset map would handle the impact event. The second map is applied as follows when the LO guard \eqref{eq:glo} is satisfied
-\begin{gather}
-	\mathcal{R}_{LO}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
-	\mathcal{R}_{LO}(\x^-) = \x^- \\
-	\p_B \leftarrow \p_A \nonumber
-\end{gather}
+%\begin{gather}
+%	\mathcal{R}_{LO}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
+%	\mathcal{R}_{LO}(\x^-) = \x^- \\
+%	\p_B \leftarrow \p_A \nonumber
+%\end{gather}
+\begin{eqnarray}
+	\z^+ &=& h_{LO}(\z^-,\u) \qquad h_{LO}:\mathbb{R}^{12} \times \mathbb{R}^{3} \rightarrow \mathbb{R}^{12} \\
+	{}	&=& \begin{bmatrix}
+		\x_{c}^- \\
+		\p_{B}^- \\
+		\p_{B}^-
+	\end{bmatrix} \nonumber
+\end{eqnarray}
 The model uses single-support dynamics after liftoff, so the labels of the foot are switched as the leg that was previously in swing will now be in stance, and the states remain unchanged. The last reset map is applied at MS when the guard \eqref{eq:gms} is met.
 %
-\begin{gather}
-	\mathcal{R}_{MS}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
-	\mathcal{R}_{MS}(\x^- ,\p_{A}) = \x^- 
-\end{gather}
+\begin{eqnarray}
+	\z^+ &=& h_{MS}(\z^-,\u) \qquad h_{MS}:\mathbb{R}^{12}\times \rightarrow \mathbb{R}^{3} \mathbb{R}^{12} \\
+	{}	&=& \begin{bmatrix}
+		\D\x_{c}^- \\
+		\p_{A}^- \\
+		\p_{B}^-
+	\end{bmatrix} \nonumber
+\end{eqnarray}
 %
 %\begin{equation}
 %	\mathcal{R}_{MS}:\x^- \rightarrowtail \p_{CoM} \leftarrow \x_{CoM} - \x_A :\mathbb{R}^6 \rightarrowtail \mathbb{R}^6
 %\end{equation}
 %
-Since the state of the CoM is measured relative to the stance foot, it is reset for the next step to reflect the foot switch. Thus, the B-SLIP model can exhibit periodic gaits by alternately switching through SS and DS phases.
+where $ \D = {\rm diag}([1 ,-1 ,1 ,1 ,-1 ,1 ,1]) $ to flip the signs of the lateral position and velocity of the CoM, as the state of the CoM is measured relative to the stance foot. Thus, the B-SLIP model can exhibit periodic gaits by alternately switching through SS and DS phases.
 
 As the B-SLIP model is passive, it does not have any active control inputs to modify gaits and maintain periodicity. Therefore, optimization methods can be used to find periodic model gaits \cite{strogatz2018nonlinear,garcia1998simplest} as steady-state human walking is periodic. 
 
