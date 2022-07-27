@@ -78,23 +78,20 @@ As speed decreased, it was progressively difficult to choose appropriate paramet
 
 \subsection{Linearization-based seed search}\label{sec:gait_lib}
 
-\begin{figure}
-	\centering
-	\includegraphics[width=0.5\linewidth]{homotopy.eps}
-	\caption{Illustration of the linearization-based predictor-corrector search scheme to find periodic low-speed gaits}\label{fig:homotopy}
-\end{figure}
-
 Empirically, gaits at speeds greater than 0.8 m/s for the B-SLIP could be found directly through optimization of \eqref{eq:gaitOpt} without special attention to initial seeds. A predictor-corrector strategy (Fig.~\ref{fig:homotopy}) was employed to address the challenges for lower velocities. In this strategy, an MS-to-MS Poincar\'e return map (described in Chapter~\ref{chapter:bg_info}) was linearized and used to solve for a preliminary seed during a homotopy process toward a lower-speed gait. This map is described by
 %
 \begin{equation}
 	\x_{k+1} = \mathcal{P}(\x_k ,\u_k)
 \end{equation}
 %
-where $\x_k$ denotes the state at MS and $\u_k$ denotes the discrete controls applied over one step as given by
-\begin{align}
-	\x &= \left[y_\com,\ z_\com,\ \dot{x}_\com,\ \dot{y}_\com\right]^T &
-	\mathbf{u} &= \left[\phi,\ \theta,\ k\right]^T
-\end{align}
+where $\x_k$ denotes the state at MS and $\u_k$ denotes the discrete controls applied over one step as given by $ \x = \left[y_c ,z_c ,\dot{x}_c ,\dot{y}_c\right]^T $ and $ \mathbf{u} = \left[\phi ,\theta ,k\right]^T $.
+
+\begin{figure}
+	\centering
+	\includegraphics[width=0.5\linewidth]{homotopy.eps}
+	\caption{Illustration of the linearization-based predictor-corrector search scheme to find periodic low-speed gaits}\label{fig:homotopy}
+\end{figure}
+
 The B-SLIP model is passive as the controls $ \u $ are constant for each gait. At MS, the vertical velocity satisfies $\dot{z}=0$, as specified by the guard condition described in \eqref{eq:gms}. Thus $\dot{z}$ is omitted from the state $\x_k$ on the Poincar\'e surface. Following the optimization of one step of a periodic gait with state and control $\x^*_k$, $\u^*_k$, the return map is linearized providing
 %
 \begin{equation}\label{eq:linearized}
@@ -240,7 +237,7 @@ The most likely gaits for one step of the walking trial are illustrated in Fig.~
 The user was walking at a velocity between 0.6-0.7 m/s so the gaits at those speeds are shown to be most likely. All library gaits qualitatively matched human data i.e., maximum forward velocity was achieved during DS, and lateral velocity was zero at the end of the step. However, the initial and lateral positions were optimization variables when generating the gait library, and as a result, they do not match the initial position in the measured data. Therefore estimates of CoM velocities, none of which had direct measurements, took $ \approx $50 ms to stabilize to expected behavior as illustrated in Fig.~\ref{fig:exoState} where estimates are plotted along with measured values. The DS period, illustrated in gray, was determined when foot-mounted force sensors indicated both feet were flat on the ground.
 \begin{figure}
 	\centering
-	\includegraphics[width= 0.8\linewidth]{stateEstExo.eps}
+	\includegraphics[width= 0.7\linewidth]{stateEstExo.eps}
 	\caption{State estimates from the IMM framework applied to experimental measurements of an able-bodied individual walking in an exoskeleton.}\label{fig:exoState}
 \end{figure}
 

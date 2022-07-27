@@ -37,18 +37,18 @@ The work presented herein is focused on individuals recovering from iSCIs whose 
 %
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\linewidth]{3DSLIP.eps}
+	\includegraphics[width=0.6\linewidth]{3DSLIP.eps}
 	\caption[The Bipedal Spring Loaded Inverted Pendulum]{The Bipedal Spring Loaded Inverted Pendulum \cite{liu2015dynamic} model of walking}\label{fig:slip}
 \end{figure}
 %
+
+A gait of the B-SLIP model, as viewed in the sagittal plane \footnote{The sagittal plane is the plane that divides the body into right and left parts.}, is illustrated in Fig.~\ref{fig:slip_gait}. This gait starts at midstance (MS), where the CoM is loaded onto the trailing leg in single-support (SS1). The gait then proceeds with the touchdown (TD) of the leading leg and enters the double support (DS) phase. The DS phase ends with lift-off (LO) of the trailing leg and the model enters the second single-support phase (SS2). The SS2 phase ends in MS, again with the CoM loaded onto the leading leg. As there are alternating SS and DS phases, the dynamics of the B-SLIP model are hybrid.
+
 \begin{figure}
 	\centering
 	\includegraphics[width=0.85\linewidth]{slip_gait.pdf}
 	\caption{One step of a B-SLIP gait}\label{fig:slip_gait}
 \end{figure} 
-%
-
-A gait of the B-SLIP model, as viewed in the sagittal plane \footnote{The sagittal plane is the plane that divides the body into right and left parts.}, is illustrated in Fig.~\ref{fig:slip_gait}. This gait starts at midstance (MS), where the CoM is loaded onto the trailing leg in single-support (SS1). The gait then proceeds with the touchdown (TD) of the leading leg and enters the double support (DS) phase. The DS phase ends with lift-off (LO) of the trailing leg and the model enters the second single-support phase (SS2). The SS2 phase ends in MS, again with the CoM loaded onto the leading leg. As there are alternating SS and DS phases, the dynamics of the B-SLIP model are hybrid.
 
 \subsection{Hybrid dynamics of the B-SLIP model}
 The dynamics of the model in single support are described by
@@ -99,6 +99,7 @@ where
 	\end{bmatrix}
 \end{equation}
 Were the feet assumed to have mass, this reset map would handle the impact event. The second map is applied as follows when the LO guard \eqref{eq:glo} is satisfied
+
 %\begin{gather}
 %	\mathcal{R}_{LO}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
 %	\mathcal{R}_{LO}(\x^-) = \x^- \\
@@ -133,15 +134,15 @@ As the B-SLIP model is passive, it does not have any active control inputs to mo
 
 \section{Poincar\'e maps}
 
+Poincar\'e maps are used to study state flows near periodic orbits \cite{strogatz2018nonlinear}. Consider a system whose dynamics are $ \dot{\x} = f(\x) $ where $ \x \in \mathbb{R}^n $. Then a  Poincar\'e section for this system is a set with dimension of $ n-1 $ such that all trajectories passing through the section are transverse to it. It may be placed at a gait event such as MS, TD, or LO when the value of one of the states may be known, i.e., when a guard condition is met. Let the Poincar\'e section be placed at MS, let $ \x_k $ be the state at the $ k^{th} $ crossing of the section, and let $ \mathcal{P}(\x_k) $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. The function $ \mathcal{P}(\x_k) $ is the Poincar\'e map formed by following trajectories from one intersection with the Poincar\'e section to the next, i.e., the Poincar\'e map takes a state on the Poincar\'e section and maps it back onto the section. There may exist an initial state, called a fixed point, representing a periodic orbit where the initial state maps back to itself after one period such that $ \x_k = \mathcal{P}(\x_k) $. 
+
+Studying the behavior of the Poincar\'e maps simplifies a problem about periodic orbits to a problem about the fixed points of a map. Finding analytical solutions for $ \mathcal{P}(\x_k) $ may be difficult so numerical methods are often used. A Poincar\'e section placed at MS is shown in blue in Fig.~\ref{fig:poincare}. The dynamics of the model are integrated for one step using $ \x_k $ as the initial condition. Optimization methods are used to find initial conditions that yield periodic gait by minimizing the norm of $ \delta \x $, the error between $ \x_k $ and $ \x_{k+1} $. The nonlinear return map may be linearized about these periodic gaits for further refining the gait search as described in Chapter~\ref{chapter:IMM}. Model gaits for various velocities may be used as references while estimating an exoskeleton user's desired gait by comparing them with measurements of quantities such as \COM~height and velocity using state estimation tools such as the Kalman filter. 
+
 \begin{figure}
 	\centering
 	\includegraphics[width=.3\linewidth]{poincare.pdf}
 	\caption{A Poincar\'e map used to find periodic gaits}\label{fig:poincare}
 \end{figure}
-
-Poincar\'e maps are used to study state flows near periodic orbits \cite{strogatz2018nonlinear}. Consider a system whose dynamics are $ \dot{\x} = f(\x) $ where $ \x \in \mathbb{R}^n $. Then a  Poincar\'e section for this system is a set with dimension of $ n-1 $ such that all trajectories passing through the section are transverse to it. It may be placed at a gait event such as MS, TD, or LO when the value of one of the states may be known, i.e., when a guard condition is met. Let the Poincar\'e section be placed at MS, let $ \x_k $ be the state at the $ k^{th} $ crossing of the section, and let $ \mathcal{P}(\x_k) $ be a function that returns the state after one cycle, or a step in the case of the B-SLIP, such that $ \x_{k+1} = \mathcal{P}(\x_k) $. The function $ \mathcal{P}(\x_k) $ is the Poincar\'e map formed by following trajectories from one intersection with the Poincar\'e section to the next, i.e., the Poincar\'e map takes a state on the Poincar\'e section and maps it back onto the section. There may exist an initial state, called a fixed point, representing a periodic orbit where the initial state maps back to itself after one period such that $ \x_k = \mathcal{P}(\x_k) $. 
-
-Studying the behavior of the Poincar\'e maps simplifies a problem about periodic orbits to a problem about the fixed points of a map. Finding analytical solutions for $ \mathcal{P}(\x_k) $ may be difficult so numerical methods are often used. A Poincar\'e section placed at MS is shown in blue in Fig.~\ref{fig:poincare}. The dynamics of the model are integrated for one step using $ \x_k $ as the initial condition. Optimization methods are used to find initial conditions that yield periodic gait by minimizing the norm of $ \delta \x $, the error between $ \x_k $ and $ \x_{k+1} $. The nonlinear return map may be linearized about these periodic gaits for further refining the gait search as described in Chapter~\ref{chapter:IMM}. Model gaits for various velocities may be used as references while estimating an exoskeleton user's desired gait by comparing them with measurements of quantities such as \COM~height and velocity using state estimation tools such as the Kalman filter. 
 
 \section{State estimation using Kalman filters}
 
@@ -214,7 +215,7 @@ developed by Ekso Bionics. The reliance of many state-of-the-art intent inferenc
 
 \begin{figure}
 	\centering
-	\includegraphics[height=4in]{exo_gt.pdf}
+	\includegraphics[height=3.7in]{exo_gt.pdf}
 	\vspace{-1em}
 	\caption[Measurements obtained from sensors onboard the Ekso GT]{Measurements obtained from sensors onboard the Ekso GT \cite{eksoOperator}}\label{fig:exoOperator}
 	\vspace{-1em}
