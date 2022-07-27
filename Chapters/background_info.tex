@@ -82,7 +82,7 @@ There are three reset maps following the general form $ \z^+ = h(\z^-,\u) $, whe
 %	\mathcal{R}_{TD}(\x^-) = \x^- 
 %\end{gather}
 \begin{eqnarray}
-	\z^+ &=& h_{TD}(\z^-,\u) \qquad h_{TD}:\mathbb{R}^{12}\times \mathbb{R}^{3 \rightarrow } \mathbb{R}^{12} \\
+	\z^+ &=& h_{TD}(\z^-,\u) \qquad h_{TD}:\mathbb{R}^{12}\times \mathbb{R}^{3 }  \rightarrow \mathbb{R}^{12} \\
 	{}	&=& \begin{bmatrix}
 		\x_{c}^- \\
 		\p_{A}^- \\
@@ -99,7 +99,7 @@ where
 	\end{bmatrix}
 \end{equation}
 Were the feet assumed to have mass, this reset map would handle the impact event. The second map is applied as follows when the LO guard \eqref{eq:glo} is satisfied
-
+%
 %\begin{gather}
 %	\mathcal{R}_{LO}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
 %	\mathcal{R}_{LO}(\x^-) = \x^- \\
@@ -116,7 +116,7 @@ Were the feet assumed to have mass, this reset map would handle the impact event
 The model uses single-support dynamics after liftoff, so the labels of the foot are switched as the leg that was previously in swing will now be in stance, and the states remain unchanged. The last reset map is applied at MS when the guard \eqref{eq:gms} is met.
 %
 \begin{eqnarray}
-	\z^+ &=& h_{MS}(\z^-,\u) \qquad h_{MS}:\mathbb{R}^{12}\times \rightarrow \mathbb{R}^{3} \mathbb{R}^{12} \\
+	\z^+ &=& h_{MS}(\z^-,\u) \qquad h_{MS}:\mathbb{R}^{12}\times  \mathbb{R}^{3} \rightarrow \mathbb{R}^{12} \\
 	{}	&=& \begin{bmatrix}
 		\D\x_{c}^- \\
 		\p_{A}^- \\
