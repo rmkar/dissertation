@@ -1,4 +1,4 @@
-\chapter{Summary \& Conclusions}\label{chapter:conc}
+\chapter{Summary and Conclusions}\label{chapter:conc}
 \section{Summary}
 Inferring user intent is an important step in achieving fluent HRI for robotic exoskeletons. Doing so predictively and intuitively will enable the robot to assist the user in realizing their desired changes while allowing for easy operation of the device. The objective of this dissertation was to develop frameworks to enable such user intent estimation for people with iSCIs using solely the sensors onboard the exoskeleton. In this dissertation, the exoskeleton user's desired gait speed was assumed to represent their intent, as intent is abstract and thus difficult to quantify. The first of the two estimation frameworks presented in this dissertation employs a library containing gaits, generated using the Bipedal Spring Loaded Inverted Pendulum model, that qualitatively emulate human walking. This library is then used to estimate the gait speed and phase of an exoskeleton user via a bank of EKFs running in parallel. The second framework exploits changes in gait patterns of exoskeleton users to infer the corresponding changes in their desired speed. As inter-subject gait variability and the severity of the subjects' injuries present challenges in estimating the user's desire to change speed, a data-driven strategy was presented to customize intent change estimation to fit each subject's individualized gait patterns.
 
@@ -39,7 +39,7 @@ It was also found that walker base data led to uniformly better estimator perfor
 
 \subsection{Exoskeleton control based on intent estimation}
 
-This dissertation describes frameworks to estimate the user's intended gait velocity. However, it is necessary perform tests using control based on the output of these frameworks. The inclusion of user intent estimation in exoskeleton control may further affect pHRI. Studying these effects will help in improving the quality of the estimates output by the frameworks and help increase their robustness to gait variability.
+This dissertation describes frameworks to estimate the user's intended gait velocity. However, it is necessary perform tests using control based on the output of these frameworks. The inclusion of user intent estimation in exoskeleton control may further affect pHRI and studying these effects will help improve the quality of the estimates output by the frameworks and help increase their robustness to gait variability.
 
 \section{Conclusion}
 %
