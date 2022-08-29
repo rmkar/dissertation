@@ -2,11 +2,11 @@
 
 The work presented herein draws on multiple technical tools to model human walking and estimate intent. This chapter serves to provide background information to familiarize the reader with the fundamentals of these tools before elaborating on the contributions of the dissertation in subsequent chapters. 
 
-The primary objective of this dissertation is to enable estimation of changes an exoskeleton user's gait speed. Estimation schemes depend on models of the underlying process and the same is true for gait speed estimation. This chapter describes various ways to model human walking using simple physics-based models and the choice between passive and actuated models. The Bipedal Spring-Loaded Inverted Pendulum (B-SLIP) model was chosen for use in the work presented in this dissertation. The hybrid dynamics of this model and the analysis of its gaits using Poincar\'e maps are detailed herein. The user's gait speed may then be estimated using state estimation tools.
+The primary objective of this dissertation is to enable estimation of changes an exoskeleton user's gait speed. Estimation schemes depend on models of the underlying process and the same is true for gait speed estimation. Section~\ref{sec:models} describes various ways to model human walking using simple physics-based models and the choice between passive and actuated models. The Bipedal Spring-Loaded Inverted Pendulum (B-SLIP) model was chosen for use in the work presented in this dissertation. The hybrid dynamics of this model and the analysis of its gaits using Poincar\'e maps are detailed herein. The user's gait speed may then be estimated using state estimation tools.
 
-The estimation frameworks used to achieve the objectives of this dissertation rely on Kalman filters for state estimation. The fundamentals of a Kalman Filter and its variant, the Extended Kalman Filter, are described in this chapter. These estimation frameworks were evaluated using data acquired from a variety of sensors onboard and EksoGT exoskeleton during walking trials of people with and without iSCIs. This chapter also details these trials and how the acquired data was used in the estimators.
+The estimation frameworks used to achieve the objectives of this dissertation also rely on Kalman filters for state estimation. The fundamentals of a Kalman Filter and its variant, the Extended Kalman Filter, are described in Section~\ref{sec:estimation}. These estimation frameworks were evaluated using data acquired from a variety of sensors onboard and EksoGT exoskeleton during walking trials of people with and without iSCIs. This chapter also details these trials and how the acquired data was used in the estimators.
 
-\section{Models of legged locomotion}
+\section{Models of legged locomotion}\label{sec:models}
 
 Modeling walking is one of the main components of gait velocity estimation. It may be achieved with simple physics-based template models using parameters such as center of mass (CoM) height, velocity, and leg stiffness to describe gait. Despite the large number of degrees of freedom observed in human morphology, these simple models are able to well describe legged locomotion. Physics-based models may be passive, i.e., without any control inputs, or actuated.  
 
@@ -14,7 +14,7 @@ Modeling walking is one of the main components of gait velocity estimation. It m
 
 It has been shown that passive models can accurately generate gaits that qualitatively resemble key features of human locomotion~\cite{mochon1980ballistic}. The most basic passive model is an inverted pendulum (IP) with the center of mass (CoM) vaulting over a stiff leg. However, it was observed that animal gaits exhibit significant energy storage in muscles, tendons, and ligaments. As a result, legged locomotion may be more analogous to a spring-mass system~\cite{blickhan1989spring} with the CoM loaded onto a compliant leg, modeled as a spring. This characterization of legged locomotion could not be reconciled with the stiff leg utilized in the IP model and a new model, called the Spring-Loaded Inverted Pendulum (SLIP), was proposed to add compliance to the leg via a massless spring~\cite{blickhan1989spring}. It has been observed that relative leg stiffness of animals ranging from dogs and rams to humans and kangaroos is similar during running~\cite{blickhan1993similarity} and that the CoM falls to its lowest position at midstance across species, compressing a virtual spring and releasing that stored energy as the gait progresses~\cite{full1999templates}. This dynamic similarity can be further reinforced using the Froude numbers\footnote{The Froude number is a metric that non-dimensionalizes velocity with leg length and gravity.} for various animals \cite{alexander1984gaits}. Multi-legged animals exhibit gait transitions at similar Froude numbers, suggesting that it may be possible to use template models to capture gaits for a more generalized set of subjects with respect to their morphology.
 
-The SLIP model can be used to describe human running; however, it is inadequate to describe human walking. The IP model exhibited CoM trajectories with higher vertical oscillation than observed in human trials for both walking and running~\cite{lee1998determinants}. The discrepancy in the CoM trajectories was found to increase with forward velocity. The IP and SLIP models lack the double support phase, which is crucial during walking. These deficiencies were addressed when Geyer proposed an extension of the SLIP model, the B-SLIP model, in which the CoM is supported by two massless springs of fixed stiffness~\cite{geyer2006compliant}. The  B-SLIP model matches human CoM trajectories and ground reaction force (GRF) profiles, at average walking and running velocities. Thus, the B-SLIP model is a unified model that can exhibit multiple gaits across a range of velocities. While the B-SLIP model addresses the shortcomings of IP and SLIP models, it has its drawbacks when walking at extreme velocities. The model exhibits oscillations during the double support phase at low velocities in the range of walking speeds exhibited by individuals with SCIs as illustrated in Fig.~\ref{fig:traj_compare}. These oscillations may be the result of the 2D nature of these models.
+The SLIP model can be used to describe human running; however, it is inadequate to describe human walking. The IP model exhibited CoM trajectories with higher vertical oscillation than observed in human trials for both walking and running~\cite{lee1998determinants}. The discrepancy in the CoM trajectories was found to increase with forward velocity. The IP and SLIP models lack the double support phase, which is crucial during walking. These deficiencies were addressed when Geyer proposed an extension of the SLIP model, the B-SLIP model, in which the CoM is supported by two massless springs of fixed stiffness~\cite{geyer2006compliant}. The  B-SLIP model matches human CoM trajectories and ground reaction force (GRF) profiles, at average walking and running velocities. Thus, the B-SLIP model is a unified model that can exhibit multiple gaits across a range of velocities. While the B-SLIP model addresses the shortcomings of IP and SLIP models, it has its drawbacks when walking at extreme velocities. The model exhibits oscillations during the double support phase at low velocities in the range of walking speeds exhibited by individuals with SCIs, as illustrated in Fig.~\ref{fig:traj_compare}. For example, the CoM height observed during double support should not exceed that during single support. These oscillations may be the result of the 2D nature of these models.
 
 \begin{figure}
 	\centering
@@ -28,12 +28,12 @@ In their basic forms, the IP, SLIP, and B-SLIP models all ignore lateral dynamic
 
 \subsection{Actuated models}
 
-Another approach to gait modeling is including a control input to achieve the desired gait. An example of this approach is the Variable-SLIP (V-SLIP) model, which uses variable stiffness actuation to modulate leg stiffness, in contrast to the original B-SLIP model, which has constant leg stiffness~\cite{visser2017bipedal}. This model produces a gait that is robust to disturbances, and whose cost of transport are comparable to human walking\footnote{Cost of transport quantifies the energy efficiency of a system; it measures the energy expended to travel a specified distance.}. Another approach is the Variable-Height Inverted Pendulum model, in which the CoM height is changed by applying a force along the leg~\cite{koolen2016balance} instead of varying leg stiffness. While all the previously described models have nonlinear dynamics, Kajita et al.~\cite{kajita1991study} proposed a model called the Linear Inverted Pendulum~(LIP) model in which the application of a constrained control input linearizes the dynamics of the system where the height of the \com~ is specified. The LIP model also allows the use of ankle torques to improve model performance on rugged terrain, and it has been extended to three dimensions with the 3D-LIP model~\cite{kajita20013d}.
+Another approach to gait modeling is including a control input to achieve the desired gait. An example of this approach is the Variable-SLIP (V-SLIP) model, which uses variable stiffness actuation to modulate leg stiffness, in contrast to the original B-SLIP model, which has constant leg stiffness. This model produces a gait that is robust to disturbances, and whose cost of transport are comparable to human walking\footnote{Cost of transport quantifies the energy efficiency of a system; it measures the energy expended to travel a specified distance.}~\cite{visser2017bipedal}. Another approach is the Variable-Height Inverted Pendulum model, in which the CoM height is changed by applying a force along the leg~\cite{koolen2016balance} instead of varying leg stiffness. While all the previously described models have nonlinear dynamics, Kajita et al.~\cite{kajita1991study} proposed a model called the Linear Inverted Pendulum~(LIP) model in which the application of a constrained control input linearizes the dynamics of the system where the height of the \com~ is specified. The LIP model also allows the use of ankle torques to improve model performance on rugged terrain, and it has been extended to three dimensions with the 3D-LIP model~\cite{kajita20013d}.
 
 Actuated models provide a more flexible framework to estimate gait, but determining the control parameters when applying those models to humans becomes a challenge. Therefore, active models are more suited to prosthetic devices which are used in series with the user or legged robots. Most active models have been proposed in regards to legged robots where the dynamics of the robot are well known to the designers. This allows for the complexity of the model to be matched to the complexity of the system dynamics. In the case of exoskeletons, the dynamics of the human body and a human's internal control system are still a subject of study \cite{wolpert1998internal, dounskaia2005internal, kording2007decision}, and they are further complicated by the parallel operation with the exoskeleton suit due to coupling in the human and robot. The simplicity of passive models and the lack of a need to make assumptions about the inputs from a user working in parallel makes them more suited for parallel robots such as exoskeletons. As a result, passive models may be better suited for use in intent detection frameworks. 
 
 \section{The B-SLIP model}\label{sec:bslip_model}
-The work presented herein is focused on individuals recovering from iSCIs whose walking velocities were as low as 0.5 m/s. A majority of the duration of steps at low velocities is spent in double support, and it is important to use a model that can describe this gait phase. Therefore, this work considers a passive model, the 3D~B-SLIP model, to model human locomotion shown in Fig~\ref{fig:slip}. In this model, the \COM~is loaded onto two massless spring legs of length $ l_o $ and stiffness $ k $. The state vector $ \x_{c} $ contains the position and velocity of the CoM, modeled by the point mass $ m $, relative to the stance foot such that $ \x_{c} = [x_{c} ,y_{c} ,z_{c} ,\dot{x}_{c} ,\dot{y}_{c} ,\dot{z}_{c}]^T $. The position of the leading leg at touchdown is given by two angles, the angle between the leading leg and vertical $ \theta $ and the angle $ \varphi $ between the forward axis $ x $  and the ground projection of the leading leg.
+The work presented herein is focused on individuals recovering from iSCIs whose walking velocities were as low as 0.5 m/s. A majority of the duration of steps at low velocities is spent in double support, and it is important to use a model that can describe this gait phase. Therefore, this work considers a passive model, the 3D~B-SLIP model, shown in Fig~\ref{fig:slip}, to model human locomotion. In this model, the \COM~is loaded onto two massless spring legs of length $ l_o $ and stiffness $ k $. The state vector $ \x_{c} $ contains the position and velocity of the CoM, modeled by the point mass $ m $, relative to the stance foot such that $ \x_{c} = [x_{c} ,y_{c} ,z_{c} ,\dot{x}_{c} ,\dot{y}_{c} ,\dot{z}_{c}]^T $. The position of the leading leg at touchdown is given by two angles, the angle between the leading leg and vertical $ \theta $ and the angle $ \varphi $ between the forward axis $ x $  and the ground projection of the leading leg.
 %
 \begin{figure}
 	\centering
@@ -76,7 +76,7 @@ The dynamics of the model in single support are described by
 			\p_{B}
 	\end{bmatrix}
 \]
-There are three reset maps following the general form $ \z^+ = h(\z^-,\u) $, where \mbox{$ \u = [\varphi ,\theta ,k]^T $}, and the $ + $ and $ - $ denote pre- and post-switch states. The first map is applied at TD when the guard \eqref{eq:gtd} is satisfied. There are no impacts at touchdown as spring legs of the B-SLIP model are assumed to be massless so the CoM state remains unchanged, and the position of the leading foot is updated as follows 
+There are three reset maps following the general form $ \z^+ = h(\z^-,\u) $, where \mbox{$ \u = [\varphi ,\theta ,k]^T $}, and the $ + $ and $ - $ denote pre- and post-switch states. The first map is applied at TD when the guard \eqref{eq:gtd} is satisfied. There are no impacts at touchdown, as spring legs of the B-SLIP model are assumed to be massless so the CoM state remains unchanged, and the position of the leading foot is updated as follows 
 %\begin{gather}
 %	\mathcal{R}_{TD}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
 %	\mathcal{R}_{TD}(\x^-) = \x^- 
@@ -98,7 +98,7 @@ where
 		-\cos(\phi)
 	\end{bmatrix}
 \end{equation}
-Were the feet assumed to have mass, this reset map would handle the impact event. The second map is applied as follows when the LO guard \eqref{eq:glo} is satisfied
+Were the feet assumed to have mass, this reset map would also handle the impact event. The second map is applied as follows when the LO guard \eqref{eq:glo} is satisfied
 %
 %\begin{gather}
 %	\mathcal{R}_{LO}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
@@ -110,7 +110,7 @@ Were the feet assumed to have mass, this reset map would handle the impact event
 	{}	&=& \begin{bmatrix}
 		\x_{c}^- \\
 		\p_{B}^- \\
-		\p_{B}^-
+		\p_{A}^-
 	\end{bmatrix} \nonumber
 \end{eqnarray}
 The model uses single-support dynamics after liftoff, so the labels of the foot are switched as the leg that was previously in swing will now be in stance, and the states remain unchanged. The last reset map is applied at MS when the guard \eqref{eq:gms} is met.
@@ -118,7 +118,7 @@ The model uses single-support dynamics after liftoff, so the labels of the foot 
 \begin{eqnarray}
 	\z^+ &=& h_{MS}(\z^-,\u) \qquad h_{MS}:\mathbb{R}^{12}\times  \mathbb{R}^{3} \rightarrow \mathbb{R}^{12} \\
 	{}	&=& \begin{bmatrix}
-		\D\x_{c}^- \\
+		\mathbf{f}(\x_{c}^-,\p_{A}^-) \\
 		\p_{A}^- \\
 		\p_{B}^-
 	\end{bmatrix} \nonumber
@@ -128,9 +128,9 @@ The model uses single-support dynamics after liftoff, so the labels of the foot 
 %	\mathcal{R}_{MS}:\x^- \rightarrowtail \p_{CoM} \leftarrow \x_{CoM} - \x_A :\mathbb{R}^6 \rightarrowtail \mathbb{R}^6
 %\end{equation}
 %
-where $ \D = {\rm diag}([1 ,-1 ,1 ,1 ,-1 ,1 ,1]) $ to flip the signs of the lateral position and velocity of the CoM, as the state of the CoM is measured relative to the stance foot. Thus, the B-SLIP model can exhibit periodic gaits by alternately switching through SS and DS phases.
+where $ \mathbf{f}(\x_{c}^-,\p_{A}^-) $ computes the lateral position and velocity of the CoM, as the state of the CoM is measured relative to the new stance foot. Thus, the B-SLIP model can exhibit periodic gaits by alternately switching through SS and DS phases.
 
-As the B-SLIP model is passive, it does not have any active control inputs to modify gaits and maintain periodicity. Therefore, optimization methods can be used to find periodic model gaits \cite{strogatz2018nonlinear,garcia1998simplest} as steady-state human walking is periodic. 
+As the B-SLIP model is passive, it does not have any active control inputs to modify gaits and maintain periodicity. Therefore, optimization methods can be used to find periodic model gaits \cite{strogatz2018nonlinear,garcia1998simplest}.
 
 \section{Poincar\'e maps}
 
@@ -144,7 +144,7 @@ Studying the behavior of the Poincar\'e maps simplifies a problem about periodic
 	\caption{A Poincar\'e map used to find periodic gaits}\label{fig:poincare}
 \end{figure}
 
-\section{State estimation using Kalman Filters}
+\section{State estimation using Kalman Filters}\label{sec:estimation}
 
 Kalman filtering is a feedback-based sequential optimal estimation technique \cite{kalman1960new} to estimate states and parameters of dynamical systems. The estimates made by a Kalman filter are conditioned on certain measurements of either the states themselves or other quantities that may be represented as functions of the states through a measurement model. State estimation is reliant on these measurements to get a picture of the real world; however, these measurements are rarely free of noise that may adversely affect the quality of the estimates. 
 
@@ -154,7 +154,7 @@ Kalman filters follow a predictor-corrector scheme in which states are propagate
 The filter is initialized at a certain initial state estimate $ \xh_0 $ that may have associated uncertainty due to measurement errors. The evolution of this state is described using dynamical system 
 %
 \begin{eqnarray}
-	\x_{k+1} &=& \A_k \x_k + \B_k \u_k + \mathbf{G} \mathbf{w}_k,\quad \mathbf{w}_k \sim \mathcal{N}(0, \Q_k) \label{eq:sys_disc}  \\
+	\x_{k+1} &=& \A_k \x_k + \B_k \u_k + \mathbf{G}_k \mathbf{w}_k,\quad \mathbf{w}_k \sim \mathcal{N}(0, \Q_k) \label{eq:sys_disc}  \\
 	\yt_k &=& \H_k \x_k + \mathbf{v}_k,\quad \mathbf{v}_k \sim \mathcal{N}(0,\R_k) \label{eq:meas_lin}
 \end{eqnarray}
 %
@@ -167,7 +167,7 @@ The filter is initialized at a certain initial state estimate $ \xh_0 $ that may
 \end{figure}
 %
 
-The uncertainty associated with the estimates increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to update the state estimates and reduce the uncertainty as illustrated in Fig.~\ref{fig:kalman}, where the $ + $ and $ - $ in the superscript denote pre- and post-update states. The system illustrated here is discrete; however, a continuous state evolution is shown to better illustrate the growth in uncertainty. Kalman filters account for the uncertainty in both, the state estimates and the measurements. Further details of this process are as follow. The state estimates and estimate covariance $ \P $ are propagated in discrete time such that
+The uncertainty associated with the estimates increases as the state is propagated forward through time using the system dynamics. Regular measurements of state variables are used to update the state estimates and reduce the uncertainty. This process is illustrated in Fig.~\ref{fig:kalman}, where the $ + $ and $ - $ in the superscript denote pre- and post-update states. The system illustrated here is discrete; however, a continuous state evolution is shown to better illustrate the growth in uncertainty. Kalman filters account for the uncertainty in both, the state estimates and the measurements. Further details of this process are as follow. The state estimates and estimate covariance $ \P $ are propagated in discrete time such that
 \begin{eqnarray}
 	\xh_{k+1} &=& \A_k \xh_k + \B_k \u_k \\
 	\P_{k+1} &=& \A_k\P_k \A_k^T + \mathbf{G}_k\Q_k\mathbf{G}_k^T 
@@ -190,11 +190,11 @@ Simple models used to describe legged locomotion have nonlinear dynamics, and so
 	\yt_k &=& \mathbf{h}(\x_k) + \mathbf{v}_k,\quad \mathbf{v}_k \sim \mathcal{N}(0,\R_k) \label{eq:meas}
 \end{eqnarray}
 %
-\noindent where $ \x(t) $ and $ \u(t) $ are the continuous-time states and inputs, $ \y_k $ are the discrete-time measurements, and $ \mathbf{f}(\x(t),\u(t),t) $ and $ \mathbf{h}(\x_k) $ are the system and measurement function, respectively. The system has zero-mean Gaussian process and measurement noises $ \mathbf{w}(t) $ and $ \mathbf{v}_k $, respectively with covariances $ \Q(t) $ and $ \R_k $, respectively. The measurement noise $ \mathbf{v}_k $ is combined with the measurement equation $ \mathbf{h}(\x_k) $ to form the noisy measurement $ \yt_k $. 
+\noindent where $ \x(t) $ and $ \u(t) $ are the continuous-time states and inputs, $ \y_k $ are the discrete-time measurements, and $ \mathbf{f}(\x(t),\mathbf{w}(t), \u(t),t) $ and $ \mathbf{h}(\x_k) $ are the system and measurement function, respectively. The system has zero-mean Gaussian process and measurement noises $ \mathbf{w}(t) $ and $ \mathbf{v}_k $, respectively with covariances $ \Q(t) $ and $ \R_k $, respectively. The measurement noise $ \mathbf{v}_k $ is combined with the measurement equation $ \mathbf{h}(\x_k) $ to form the noisy measurement $ \yt_k $. 
 
 The state estimates and estimate covariance $ \P(t) $ are propagated in continuous time such that
 \begin{eqnarray}
-	\dot{\xh} &=& \mathbf{f}(\xh,\u,t) \label{eq:sysProp}\\
+	\dot{\xh} &=& \mathbf{f}(\xh,\mathbf{w}(t),\u,t) \label{eq:sysProp}\\
 	\dot{\P}(t) &=& \F(t)\P(t) + \P(t)\F^T(t) + \mathbf{G}(t)\Q(t)\mathbf{G}(t)^T \label{eq:covProp} \\ 
 	\F(t) &\equiv& \frac{\partial \mathbf{f}}{\partial \x} \Bigr |_{\xh(t),\u(t)} \nonumber
 \end{eqnarray}
