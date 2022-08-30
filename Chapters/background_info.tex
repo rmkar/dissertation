@@ -46,7 +46,7 @@ A gait of the B-SLIP model, as viewed in the sagittal plane\footnote{The sagitta
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.85\linewidth]{slip_gait.pdf}
+	\includegraphics[width=0.9\linewidth]{slip_gait.pdf}
 	\caption{One step of a B-SLIP gait}\label{fig:slip_gait}
 \end{figure} 
 
@@ -98,13 +98,15 @@ where
 		-\cos(\phi)
 	\end{bmatrix}
 \end{equation}
-Were the feet assumed to have mass, this reset map would also handle the impact event. The second map is applied as follows when the LO guard \eqref{eq:glo} is satisfied
+
+\noindent Were the feet assumed to have mass, this reset map would also handle the impact event. The second map is applied as follows when the LO guard \eqref{eq:glo} is satisfied
 %
 %\begin{gather}
 %	\mathcal{R}_{LO}:\mathbb{R}^6 \rightarrow \mathbb{R}^6 \nonumber \\ 
 %	\mathcal{R}_{LO}(\x^-) = \x^- \\
 %	\p_B \leftarrow \p_A \nonumber
 %\end{gather}
+
 \begin{eqnarray}
 	\z^+ &=& h_{LO}(\z^-,\u) \qquad h_{LO}:\mathbb{R}^{12} \times \mathbb{R}^{3} \rightarrow \mathbb{R}^{12} \\
 	{}	&=& \begin{bmatrix}
@@ -192,13 +194,13 @@ Simple models used to describe legged locomotion have nonlinear dynamics, and so
 %
 \noindent where $ \x(t) $ and $ \u(t) $ are the continuous-time states and inputs, $ \y_k $ are the discrete-time measurements, and $ \mathbf{f}(\x(t),\mathbf{w}(t), \u(t),t) $ and $ \mathbf{h}(\x_k) $ are the system and measurement function, respectively. The system has zero-mean Gaussian process and measurement noises $ \mathbf{w}(t) $ and $ \mathbf{v}_k $, respectively with covariances $ \Q(t) $ and $ \R_k $, respectively. The measurement noise $ \mathbf{v}_k $ is combined with the measurement equation $ \mathbf{h}(\x_k) $ to form the noisy measurement $ \yt_k $. 
 
-The state estimates and estimate covariance $ \P(t) $ are propagated in continuous time such that
+The state estimates and estimate covariance $ \P(t) $ are propagated in continuous time such that \vspace{-2em}
 \begin{eqnarray}
 	\dot{\xh} &=& \mathbf{f}(\xh,\mathbf{w}(t),\u,t) \label{eq:sysProp}\\
 	\dot{\P}(t) &=& \F(t)\P(t) + \P(t)\F^T(t) + \mathbf{G}(t)\Q(t)\mathbf{G}(t)^T \label{eq:covProp} \\ 
 	\F(t) &\equiv& \frac{\partial \mathbf{f}}{\partial \x} \Bigr |_{\xh(t),\u(t)} \nonumber
 \end{eqnarray}
-%
+
 \noindent The states are sequentially updated such that
 \begin{eqnarray}
 	\K_k &=& \P_k^- \H^T_k(\xh_k^-) \left[\H_k(\xh_k^-)\P_k^- \H^T_k(\xh_k^-) + \R_k\right]^{-1} \\

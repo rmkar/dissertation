@@ -3,7 +3,7 @@ Accurate state estimation is a foundational component for user intent estimation
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.8\linewidth]{IMM_overview.pdf}
+	\includegraphics[width=0.7\linewidth]{IMM_overview.pdf}
 	\caption{Overview of the estimation setup}\label{fig:IMM_overview}
 	\vspace{-1em}
 \end{figure}
@@ -31,7 +31,7 @@ As described in Section~\ref{sec:bslip_model}, the state vector representing the
 %\end{table}
 %%
 
-The gait library used in the estimation framework is a collection of several B-SLIP gaits, so a procedure to generate these gaits must first established. The B-SLIP model is passive, so a gait optimization procedure was carried out considering the state evolution over one step to generate periodic gaits that qualitatively match human walking. The gait optimization was considered via a nonlinear programming problem
+The gait library used in the estimation framework is a collection of several B-SLIP gaits, so a procedure to generate these gaits must first established. The B-SLIP model is passive, so a gait optimization procedure was carried out considering the state evolution over one step to generate periodic gaits that qualitatively match human walking. The gait optimization was considered via a nonlinear programming problem \vspace{-1em}
 %
 \begin{eqnarray}
 	\min_{\greekvec{\xi}}& \quad \lVert{\mat{J}(\greekvec{\xi})}\rVert ^2 + (k_{max} - k) \label{eq:gaitOpt}\\
@@ -88,7 +88,7 @@ where $\x_k$ denotes the state at MS and $\u_k$ denotes the discrete controls ap
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.5\linewidth]{homotopy.eps}
+	\includegraphics[width=0.6\linewidth]{homotopy.eps}
 	\caption{Illustration of the linearization-based predictor-corrector search scheme to find periodic low-speed gaits}\label{fig:homotopy}
 \end{figure}
 
