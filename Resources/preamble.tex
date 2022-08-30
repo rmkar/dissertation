@@ -41,7 +41,7 @@
 \ProvidesFile{main.tex}
 [2016/10/16 v3.2016%
 Template file for NDdiss2e class]
-\documentclass[final,noinfo,numrefs,sort]{nddiss2e}
+\documentclass[final,noinfo,numrefs,sort&compress]{nddiss2e}
 % One of the options draft, review, final must be chosen.
 % One of the options textrefs or numrefs should be chosen
 % to specify if you want numerical or ``author-date''
@@ -78,6 +78,8 @@ Template file for NDdiss2e class]
 \usepackage{algpseudocode}
 \usepackage{multirow}
 \usepackage{Resources/eqnHelper}
+\usepackage[none]{hyphenat}
+\usepackage{diagbox}
 %\allowdisplaybreaks
 %\usepackage[hidelinks]{hyperref}
 
