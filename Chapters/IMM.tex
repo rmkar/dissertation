@@ -3,7 +3,7 @@ Accurate state estimation is a foundational component for user intent estimation
 
 \begin{figure}
 	\centering
-	\includegraphics[width=0.7\linewidth]{IMM_overview.pdf}
+	\includegraphics[width=0.85\linewidth]{IMM_overview.pdf}
 	\caption{Overview of the estimation setup}\label{fig:IMM_overview}
 	\vspace{-1em}
 \end{figure}
@@ -20,7 +20,7 @@ The remaining challenges faced during estimation were the increased difficulty i
 
 Qualitative differences in the CoM trajectories of humans walking at different speeds were observed in experimental data \cite{fukuchi2018public}. Namely, the vertical and lateral excursion of the CoM over each step decrease and increase, respectively, as gait velocity decreases. It was hypothesized that gait parameters may be estimated based on the changes in CoM trajectories. The 3D B-SLIP model presents a balance between model simplicity and CoM trajectory emulation. Additionally, using the 3D B-SLIP model allows the modeling of two important attributes of walking at low speeds: the lateral CoM movement that becomes increasingly dominant as gait velocity decreases, and the DS period that represents a majority of the gait cycle. As the B-SLIP is a passive model, the omission of an actuator simplifies the estimation problem by reducing the assumptions necessary while applying these models to human walking. 
 
-As described in Section~\ref{sec:bslip_model}, the state vector representing the CoM is \[\x_{c} = \left[x_{c} ,y_{c} ,z_{c} ,\dot{x}_{c} ,\dot{y}_{c} ,\dot{z}_{c}\right]^T \] The input parameters of the model, leg angles and stiffness, along with components of the initial \com~ state, are collected in a parameter vector \[\greekvec{\xi} = [\phi, \theta ,k ,z_{0_{c}} ,y_{0_{c}} ,\dot{x}_{0_{c}}]^T\] Here, $ \theta $ and $ \phi $ are leg angles that govern step length and width, respectively, and variables $ z_{0_{c}}$, $y_{0_{c}}$, and $\dot{x}_{0_{c}} $ give the vertical position, lateral position, and forward velocity of the CoM relative to the stance foot at the beginning of the step. An optimization procedure was carried out to find the parameters that would yield a fixed point for an MS-to-MS Poincar\'e map.
+As described in Section~\ref{sec:bslip_model}, the state vector representing the CoM is \mbox{ $\x_{c} = \left[x_{c} ,y_{c} ,z_{c} ,\dot{x}_{c} ,\dot{y}_{c} ,\dot{z}_{c}\right]^T $}. The input parameters of the model, leg angles and stiffness, along with components of the initial \com~ state, are collected in a parameter vector $\greekvec{\xi} = [\phi, \theta ,k ,z_{0_{c}} ,y_{0_{c}} ,\dot{x}_{0_{c}}]^T$. Here, $ \theta $ and $ \phi $ are leg angles that govern step length and width, respectively, and variables $ z_{0_{c}}$, $y_{0_{c}}$, and $\dot{x}_{0_{c}} $ give the vertical position, lateral position, and forward velocity of the CoM relative to the stance foot at the beginning of the step. An optimization procedure was carried out to find the parameters that would yield a fixed point for an MS-to-MS Poincar\'e map.
 
 \subsection{Gait optimization}
 %%
@@ -96,6 +96,7 @@ The B-SLIP model is passive, as the controls $ \u $ are constant for each gait. 
 %
 \begin{equation}\label{eq:linearized}
 	\x_{k+1} \approx \x_{k+1}^* + \underbrace{\left.\frac{\partial \mathcal{P}}{\partial \x}\right|_{\x^*_k, \u^*_k}}_{:=\A} \delta \x_k + \underbrace{\left. \frac{\partial \mathcal{P}}{\partial \u}\right|_{\x^*_k, \u^*_k}}_{:=\B} \delta \u_k 
+    \vspace{1em}
 \end{equation}
 %
 where $\x_{k+1}^* = \mathcal{P}(\x_k^*, \u_k^*)$, $\delta \x_k = \x_k - \x^*_k$, and $\delta \u_k = \u_k - \u^*_k$. Since a gait of the 3D B-SLIP model is two-step periodic, left/right symmetry from step to step requires that $\x_{k+1}^* = \mathbf{S} \x_k^*$, where $\mathbf{S} = {\rm diag}([-1, 1, 1, 1])$. This matrix encodes that only the $y$-position (lateral position) of the CoM relative to the foot must change signs from step to step. Then, to solve for an approximate state/control pair for a lower-speed gait, variations to the parameters were found such that $\delta \x_{k+1} = \mathbf{S} \delta \x_k $. This constraint requires
@@ -114,9 +115,14 @@ To generate a suitable next seed, the forward velocity component of $ \delta \x_
 
 \section{Interacting Multi-Model estimation} \label{sec:IMM}
 
+The IMM is a technique to  adaptively fuse estimates from multiple filters, running in parallel. Despite their use in other hybrid systems (\cite{bar2005imm},\cite{daeipour1998imm}), the application of IMMs to legged locomotion has been minimal. One example is the use of IMMs for legged locomotion is in state estimation and gait phase prediction for RHex \cite{skaff2005context}, a six-legged robot with compliant legs. Gait phase estimation is possible by directly using force
+sensors in the exoskeleton soles \cite{agostini2013segmentation,de2012gait}. However, by relating human data to template models, the presented approach may provide insight into unmeasured parameters, such as leg stiffness, and the effects of changes in them on the gait. While the current presentation aims to be self contained, the interested reader is referred to \cite{Crassidis} for additional detail.
+
+The IMM estimation process used in this work is illustrated in Fig. \ref{fig:IMM}. Each of the $M$ filters represents a different candidate gait and phase, and the IMM attempts to determine which of the phases is most likely. In what follows, $ i $ and $ j $ index over filters, and $ k$ indexes over time. There are two types of estimate interactions shown in Fig.~\ref{fig:IMM}. First, a likelihood-based mixing produces an ensemble estimate output from the IMM, while a Markov mixing relates the state estimates from the filters at time step $k$ to the initial estimates at time step $k+1$. 
+
 \begin{figure}
 	\centering
-	\begin{overpic}[width=0.8\linewidth,percent]{IMMblock2.pdf}
+	\begin{overpic}[width=0.85\linewidth,percent]{IMMblock2.pdf}
 		\put(50.5,6){\textbf{\scriptsize{\eqref{eq:physicalLikelihood}},}}
 		\put(50.5,3){\textbf{\scriptsize{\eqref{eq:weightCalc}}}}
 		\put(72.5,4){\textbf{\scriptsize{\eqref{eq:estimates},\eqref{eq:covFuse}}}}
@@ -124,11 +130,6 @@ To generate a suitable next seed, the forward velocity component of $ \delta \x_
 	\end{overpic}
 	\caption{IMM scheme used to estimate gait phase and walking speed.}\label{fig:IMM}
 \end{figure}
-The IMM is a technique to  adaptively fuse estimates from multiple filters, running in parallel. Despite their use in other hybrid systems (\cite{bar2005imm},\cite{daeipour1998imm}), the application of IMMs to legged locomotion has been minimal. One example is the use of IMMs for legged locomotion is in state estimation and gait phase prediction for RHex \cite{skaff2005context}, a six-legged robot with compliant legs. Gait phase estimation is possible by directly using force
-sensors in the exoskeleton soles \cite{agostini2013segmentation,de2012gait}. However, by relating human data to template models, the presented approach may provide insight into unmeasured parameters, such as leg stiffness, and the effects of changes in them on the gait. While the current presentation aims to be self contained, the interested reader is referred to \cite{Crassidis} for additional detail.
-
-The IMM estimation process used in this work is illustrated in Fig. \ref{fig:IMM}. Each of the $M$ filters represents a different candidate gait and phase, and the IMM attempts to determine which of the phases is most likely. 
-In what follows, $ i $ and $ j $ index over filters, and $ k$ indexes over time. There are two types of estimate interactions shown in Fig.~\ref{fig:IMM}. First, a likelihood-based mixing produces an ensemble estimate output from the IMM, while a Markov mixing relates the state estimates from the filters at time step $k$ to the initial estimates at time step $k+1$. 
 
 The filters begin with initial state estimates $\fsup{\xh_k^0}{j}$ and covariances $\fsup{\P_k^0}{j}$ that are propagated forward to $\fsup{\xh_k^-}{j}$ and $\fsup{\P_k^-}{j}$ using the B-SLIP dynamics presented in \eqref{eq:sysProp} and~\eqref{eq:covProp}. Measurements from the system whose state is being estimated, in this case, measurements from the exoskeleton sensors, are used to initialize the filter at start-up, and the covariance is set to be an identity matrix. Measurements from the sensors are represented by $ \yt_k $, and these may be reconstructed using the estimated state with the measurement function $  \h\left( \fsup{\xh_k^-}{j}\right) $. The error between these two quantities is known as the measurement residual given by $ \fsup{\e_k}{j} = \yt_k - \h\left( \fsup{\xh_k^-}{j}\right)$. The measurement likelihood ${}^j  \ell_k$ is then calculated for the state estimate of each filter as
 \begin{align} \label{eq:likelihood}

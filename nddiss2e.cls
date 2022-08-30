@@ -353,7 +353,7 @@
     \fi
   \else \relax
   \fi
-  \null\vspace*{\skip4}
+  \null\vspace*{\skip0}
   \begin{center}%
     \MakeTextUppercase{\@title} \par%
     \vskip\skip1%

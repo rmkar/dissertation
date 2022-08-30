@@ -2,11 +2,11 @@
 
 The work presented herein draws on multiple technical tools to model human walking and estimate intent. This chapter serves to provide background information to familiarize the reader with the fundamentals of these tools before elaborating on the contributions of the dissertation in subsequent chapters. 
 
-The primary objective of this dissertation is to enable estimation of changes an exoskeleton user's gait speed. Estimation schemes depend on models of the underlying process and the same is true for gait speed estimation. Section~\ref{sec:models} describes various ways to model human walking using simple physics-based models and the choice between passive and actuated models. The Bipedal Spring-Loaded Inverted Pendulum (B-SLIP) model was chosen for use in the work presented in this dissertation. The hybrid dynamics of this model and the analysis of its gaits using Poincar\'e maps are detailed herein. The user's gait speed may then be estimated using state estimation tools.
+The primary objective of this dissertation is to enable estimation of changes an exoskeleton user's gait speed. Estimation schemes depend on models of the underlying process and the same is true for gait speed estimation. Section~\ref{sec:walking_models} describes various ways to model human walking using simple physics-based models and the choice between passive and actuated models. The Bipedal Spring-Loaded Inverted Pendulum (B-SLIP) model was chosen for use in the work presented in this dissertation. The hybrid dynamics of this model and the analysis of its gaits using Poincar\'e maps are detailed herein. The user's gait speed may then be estimated using state estimation tools.
 
 The estimation frameworks used to achieve the objectives of this dissertation also rely on Kalman filters for state estimation. The fundamentals of a Kalman Filter and its variant, the Extended Kalman Filter, are described in Section~\ref{sec:estimation}. These estimation frameworks were evaluated using data acquired from a variety of sensors onboard and EksoGT exoskeleton during walking trials of people with and without iSCIs. This chapter also details these trials and how the acquired data was used in the estimators.
 
-\section{Models of legged locomotion}\label{sec:models}
+\section{Models of legged locomotion}\label{sec:walking_models}
 
 Modeling walking is one of the main components of gait velocity estimation. It may be achieved with simple physics-based template models using parameters such as center of mass (CoM) height, velocity, and leg stiffness to describe gait. Despite the large number of degrees of freedom observed in human morphology, these simple models are able to well describe legged locomotion. Physics-based models may be passive, i.e., without any control inputs, or actuated.  
 
@@ -95,7 +95,7 @@ where
 	\begin{bmatrix}
 		\sin(\theta)\cos(\phi)\\
 		\sin(\theta)\sin(\phi)\\
-		-\cos(\phi)
+		-\cos(\theta)
 	\end{bmatrix}
 \end{equation}
 
@@ -110,17 +110,17 @@ where
 \begin{eqnarray}
 	\z^+ &=& h_{LO}(\z^-,\u) \qquad h_{LO}:\mathbb{R}^{12} \times \mathbb{R}^{3} \rightarrow \mathbb{R}^{12} \\
 	{}	&=& \begin{bmatrix}
-		\x_{c}^- \\
+		\mathbf{f}(\x_{c}^-,\p_{B}^-) \\
 		\p_{B}^- \\
 		\p_{A}^-
 	\end{bmatrix} \nonumber
 \end{eqnarray}
-The model uses single-support dynamics after liftoff, so the labels of the foot are switched as the leg that was previously in swing will now be in stance, and the states remain unchanged. The last reset map is applied at MS when the guard \eqref{eq:gms} is met.
+The model uses single-support dynamics after liftoff, so the labels of the foot are switched as the leg that was previously in swing will now be in stance, and the states remain unchanged. Therefore, $ \mathbf{f}(\x_{c}^-,\p_{A}^-) $ computes the lateral position and velocity of the CoM, as the state of the CoM is measured relative to the new stance foot. The last reset map is applied at MS when the guard \eqref{eq:gms} is met.
 %
 \begin{eqnarray}
 	\z^+ &=& h_{MS}(\z^-,\u) \qquad h_{MS}:\mathbb{R}^{12}\times  \mathbb{R}^{3} \rightarrow \mathbb{R}^{12} \\
 	{}	&=& \begin{bmatrix}
-		\mathbf{f}(\x_{c}^-,\p_{A}^-) \\
+		\x_{c}^- \\
 		\p_{A}^- \\
 		\p_{B}^-
 	\end{bmatrix} \nonumber
@@ -130,7 +130,7 @@ The model uses single-support dynamics after liftoff, so the labels of the foot 
 %	\mathcal{R}_{MS}:\x^- \rightarrowtail \p_{CoM} \leftarrow \x_{CoM} - \x_A :\mathbb{R}^6 \rightarrowtail \mathbb{R}^6
 %\end{equation}
 %
-where $ \mathbf{f}(\x_{c}^-,\p_{A}^-) $ computes the lateral position and velocity of the CoM, as the state of the CoM is measured relative to the new stance foot. Thus, the B-SLIP model can exhibit periodic gaits by alternately switching through SS and DS phases.
+Thus, the B-SLIP model can exhibit periodic gaits by alternately switching through SS and DS phases.
 
 As the B-SLIP model is passive, it does not have any active control inputs to modify gaits and maintain periodicity. Therefore, optimization methods can be used to find periodic model gaits \cite{strogatz2018nonlinear,garcia1998simplest}.
 
