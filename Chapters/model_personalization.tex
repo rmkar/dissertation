@@ -61,7 +61,7 @@ Approximating gait data with Gaussian distributions motivated transforming the d
 	\q_{n/b} &=& (\q_b - \bar{q}_b)\sigma_n \sigma_b^{-1} + \bar{q}_n \label{eq:transform} \\
 	\q &\leftarrow& [\q_{n/b}^T\ \q_{n}^T]^T
 \end{eqnarray}
-The features are then collected in a matrix $ \Q \in \mathcal{R}^{N \times S} $ such that $ \q = [\q_1 \dots \q_S] $. As the objective of this method is to relate changes in gait features to corresponding changes in gait speed, the work that follows considers the changes in gait feature measurements from step-to-step $ \Delta \Q $.
+The features are then collected in a matrix $ \Q \in \mathcal{R}^{N \times S} $ such that $ \Q = [\q_1 \dots \q_S] $. As the objective of this method is to relate changes in gait features to corresponding changes in gait speed, the work that follows considers the changes in gait feature measurements from step-to-step $ \Delta \Q $.
 
 It is important to choose appropriate novel data to ensure that the gait feature data carries a sufficiently high amount of information about the subject's desired gait speed.
 \subsubsection{Choosing Appropriate Novel Data}\label{sec:MI}
