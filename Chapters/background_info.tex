@@ -115,7 +115,7 @@ where
 		\p_{A}^-
 	\end{bmatrix} \nonumber
 \end{eqnarray}
-The model uses single-support dynamics after liftoff, so the labels of the foot are switched as the leg that was previously in swing will now be in stance, and the states remain unchanged. Therefore, $ \mathbf{f}(\x_{c}^-,\p_{A}^-) $ computes the lateral position and velocity of the CoM, as the state of the CoM is measured relative to the new stance foot. The last reset map is applied at MS when the guard \eqref{eq:gms} is met.
+The model uses single-support dynamics after liftoff, so the labels of the foot are switched as the leg that was previously in swing will now be in stance, and the states remain unchanged. Therefore, $ \mathbf{f}(\x_{c}^-,\p_{B}^-) $ computes the lateral position and velocity of the CoM, as the state of the CoM is measured relative to the new stance foot. The last reset map is applied at MS when the guard \eqref{eq:gms} is met.
 %
 \begin{eqnarray}
 	\z^+ &=& h_{MS}(\z^-,\u) \qquad h_{MS}:\mathbb{R}^{12}\times  \mathbb{R}^{3} \rightarrow \mathbb{R}^{12} \\
